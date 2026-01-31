@@ -60,9 +60,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { user, authenticated, ready } = usePrivy();
   const { logout } = useLogout({
-    onSuccess: () => {
-      router.push('/');
-    },
+    onSuccess: () => router.push('/'),
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -85,22 +83,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (username) {
       navigator.clipboard.writeText(`${window.location.origin}/${username}`);
       setCopied(true);
-      toast.success('Profile URL copied!');
+      toast.success('Profile URL copied');
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050508]">
-        <div className="animate-pulse text-zinc-500">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
+        <div className="text-zinc-600 text-sm">Loading...</div>
       </div>
     );
   }
 
-  if (!authenticated) {
-    return null;
-  }
+  if (!authenticated) return null;
 
   const twitter = user?.twitter;
   const displayName = twitter?.name || twitter?.username || 'Creator';
@@ -108,75 +104,70 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const username = twitter?.username || '';
 
   return (
-    <div className="min-h-screen bg-[#050508]">
+    <div className="min-h-screen bg-[#09090b]">
       {/* Mobile header */}
-      <header className="lg:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0a0a0f]">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-zinc-400 hover:text-white"
-        >
-          {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      <header className="lg:hidden flex items-center justify-between px-4 h-14 border-b border-zinc-800/50">
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-zinc-400">
+          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
-        <span className="font-bold text-white">
-          Only<span className="text-cyan-400">Anon</span>
-        </span>
-        <div className="w-6" />
+        <span className="font-semibold text-white text-sm">OnlyAnon</span>
+        <div className="w-5" />
       </header>
 
       <div className="flex">
         {/* Sidebar */}
         <aside
           className={`
-            fixed inset-y-0 left-0 z-50 w-72 bg-[#0a0a0f] border-r border-white/5 transform transition-transform lg:translate-x-0 lg:static
+            fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-800/50
+            transform transition-transform lg:translate-x-0 lg:static
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
         >
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="p-6 border-b border-white/5">
-              <Link href="/" className="text-xl font-bold text-white">
-                Only<span className="text-cyan-400">Anon</span>
-              </Link>
+            <div className="h-14 flex items-center px-5 border-b border-zinc-800/50">
+              <Link href="/" className="font-semibold text-white">OnlyAnon</Link>
             </div>
 
-            {/* User info */}
-            <div className="p-6 border-b border-white/5">
-              <div className="flex items-center gap-3 mb-4">
-                <Avatar className="h-12 w-12 ring-2 ring-white/10">
+            {/* User */}
+            <div className="p-4 border-b border-zinc-800/50">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-9 w-9">
                   <AvatarImage src={avatarUrl} alt={displayName} />
-                  <AvatarFallback className="bg-[#18181f] text-white">
+                  <AvatarFallback className="bg-zinc-800 text-zinc-400 text-sm">
                     {displayName[0]?.toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <div className="text-white font-medium truncate">{displayName}</div>
-                  <div className="text-zinc-500 text-sm truncate">@{username}</div>
+                  <div className="text-sm font-medium text-white truncate">{displayName}</div>
+                  <div className="text-xs text-zinc-500 truncate">@{username}</div>
                 </div>
               </div>
+
               {username && (
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 px-3 py-2 bg-[#18181f] rounded-lg text-sm text-zinc-400 truncate">
+                <div className="mt-3 flex items-center gap-1">
+                  <code className="flex-1 px-2.5 py-1.5 bg-zinc-900 rounded text-xs text-zinc-500 truncate">
                     /{username}
-                  </div>
+                  </code>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={copyProfileUrl}
-                    className="text-zinc-500 hover:text-white shrink-0"
+                    className="h-7 w-7 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800"
                   >
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   </Button>
                   <Link href={`/${username}`} target="_blank">
-                    <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white shrink-0">
-                      <ExternalLink className="h-4 w-4" />
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800">
+                      <ExternalLink className="h-3.5 w-3.5" />
                     </Button>
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 p-4 space-y-1">
+            {/* Nav */}
+            <nav className="flex-1 p-3">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href ||
@@ -187,14 +178,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={`
-                      flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium
+                      flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1
                       ${isActive
-                        ? 'bg-cyan-500/10 text-cyan-400'
-                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-white text-black font-medium'
+                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
                       }
                     `}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-4 w-4" />
                     {item.label}
                   </Link>
                 );
@@ -202,30 +193,29 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </nav>
 
             {/* Logout */}
-            <div className="p-4 border-t border-white/5">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-zinc-500 hover:text-white hover:bg-white/5 font-medium"
+            <div className="p-3 border-t border-zinc-800/50">
+              <button
                 onClick={() => logout()}
+                className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-colors"
               >
-                <LogOut className="h-5 w-5 mr-3" />
-                Logout
-              </Button>
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </button>
             </div>
           </div>
         </aside>
 
-        {/* Mobile overlay */}
+        {/* Overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Main content */}
+        {/* Main */}
         <main className="flex-1 min-h-screen">
-          <div className="p-6 lg:p-8 max-w-5xl">{children}</div>
+          <div className="max-w-4xl mx-auto p-6 lg:p-8">{children}</div>
         </main>
       </div>
     </div>

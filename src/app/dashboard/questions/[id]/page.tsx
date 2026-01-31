@@ -6,10 +6,8 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, MessageSquare, Send, CheckCircle, Clock, Loader2 } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Question {
@@ -64,38 +62,23 @@ export default function QuestionDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['question', questionId] });
       queryClient.invalidateQueries({ queryKey: ['questions'] });
-      toast.success('Reply sent successfully!');
+      toast.success('Reply sent');
     },
     onError: (error: Error) => {
       toast.error(error.message);
     },
   });
 
-  const handleSubmitReply = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!replyText.trim()) {
-      toast.error('Please enter your reply');
-      return;
-    }
-
-    replyMutation.mutate();
-  };
-
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 text-cyan-400 animate-spin" />
-      </div>
-    );
+    return <div className="text-center py-20 text-zinc-600 text-sm">Loading...</div>;
   }
 
   if (!question) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-500 mb-4">Question not found</p>
+        <p className="text-zinc-500 text-sm mb-4">Question not found</p>
         <Link href="/dashboard">
-          <Button variant="outline" className="border-zinc-700 text-zinc-300">
+          <Button variant="outline" size="sm" className="text-zinc-400 border-zinc-700">
             Back to Dashboard
           </Button>
         </Link>
@@ -108,115 +91,87 @@ export default function QuestionDetailPage() {
   return (
     <div className="max-w-2xl space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <Link href="/dashboard">
-          <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white">
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-zinc-500 hover:text-white">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <div>
-          <h1 className="text-xl font-bold text-white">Question Detail</h1>
-          <p className="text-zinc-500 text-sm">{question.offering_title}</p>
+        <div className="flex-1">
+          <h1 className="text-lg font-medium text-white">Question</h1>
+          <p className="text-xs text-zinc-500">{question.offering_title}</p>
         </div>
+        {isReplied ? (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-500">
+            <CheckCircle className="h-3 w-3" />
+            Replied
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-amber-500/10 text-amber-500">
+            <Clock className="h-3 w-3" />
+            Pending
+          </span>
+        )}
       </div>
 
-      {/* Status & Payment */}
-      <div className="flex items-center gap-4">
-        <Badge
-          className={
-            isReplied
-              ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/10 border-0'
-              : 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/10 border-0'
-          }
-        >
-          {isReplied ? (
-            <span className="flex items-center gap-1">
-              <CheckCircle className="h-3 w-3" />
-              Replied
-            </span>
-          ) : (
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              Pending
-            </span>
-          )}
-        </Badge>
-        <span className="text-sm text-zinc-500">
-          {question.payment_amount} {question.payment_token}
-        </span>
-        <span className="text-sm text-zinc-600">
-          {new Date(question.created_at).toLocaleString()}
-        </span>
+      {/* Meta */}
+      <div className="flex items-center gap-3 text-xs text-zinc-500">
+        <span>{question.payment_amount} {question.payment_token}</span>
+        <span>·</span>
+        <span>{new Date(question.created_at).toLocaleString()}</span>
       </div>
 
       {/* Question */}
-      <Card className="bg-[#0c0c12] border-white/5">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center shrink-0">
-              <MessageSquare className="h-5 w-5 text-cyan-400" />
-            </div>
-            <div>
-              <p className="text-sm text-zinc-500 mb-2">Anonymous Question</p>
-              <p className="text-white whitespace-pre-wrap leading-relaxed">{question.question_text}</p>
+      <div className="p-5 rounded-lg bg-zinc-900/50 border border-zinc-800/50">
+        <p className="text-xs text-zinc-500 mb-2">Question</p>
+        <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">{question.question_text}</p>
+      </div>
+
+      {/* Reply */}
+      {isReplied ? (
+        <div className="p-5 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-xs text-emerald-500">Your reply</p>
+            {question.replied_at && (
+              <span className="text-xs text-zinc-600">
+                · {new Date(question.replied_at).toLocaleString()}
+              </span>
+            )}
+          </div>
+          <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">{question.reply_text}</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div>
+            <label className="text-xs text-zinc-500 mb-2 block">Your reply</label>
+            <Textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              placeholder="Write your response..."
+              className="bg-zinc-900/50 border-zinc-800 text-white text-sm placeholder:text-zinc-600 min-h-[140px] focus:border-zinc-700"
+              maxLength={2000}
+              disabled={replyMutation.isPending}
+            />
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-xs text-zinc-600">{replyText.length}/2000</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Reply Section */}
-      {isReplied ? (
-        <Card className="bg-emerald-500/5 border-emerald-500/20">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center shrink-0">
-                <CheckCircle className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-sm text-emerald-400 mb-2">
-                  Your Reply • {question.replied_at && new Date(question.replied_at).toLocaleString()}
-                </p>
-                <p className="text-white whitespace-pre-wrap leading-relaxed">{question.reply_text}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="bg-[#0c0c12] border-white/5">
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmitReply}>
-              <p className="text-sm text-zinc-400 mb-3">Write your reply</p>
-              <Textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Type your answer here..."
-                className="bg-[#18181f] border-white/10 text-white placeholder:text-zinc-600 min-h-[150px] mb-4 focus:border-cyan-500/50"
-                maxLength={2000}
-                disabled={replyMutation.isPending}
-              />
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-zinc-600">{replyText.length}/2000</span>
-                <Button
-                  type="submit"
-                  className="gradient-primary text-white hover:opacity-90"
-                  disabled={replyMutation.isPending || !replyText.trim()}
-                >
-                  {replyMutation.isPending ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Sending...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Send className="h-4 w-4" />
-                      Send Reply
-                    </span>
-                  )}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+          <Button
+            onClick={() => replyMutation.mutate()}
+            disabled={replyMutation.isPending || !replyText.trim()}
+            className="bg-white text-black hover:bg-zinc-200 h-9 px-4 text-sm"
+          >
+            {replyMutation.isPending ? (
+              'Sending...'
+            ) : (
+              <>
+                <Send className="h-3.5 w-3.5 mr-2" />
+                Send Reply
+              </>
+            )}
+          </Button>
+        </div>
       )}
     </div>
   );
