@@ -1,11 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Required for Solana wallet adapter and Privy
-  webpack: (config) => {
-    config.externals.push('pino-pretty', 'lokijs', 'encoding');
-    return config;
-  },
+  // Use Turbopack (Next.js 16 default)
+  turbopack: {},
   // Skip type checking during build (handled separately)
   typescript: {
     ignoreBuildErrors: process.env.SKIP_BUILD_ERRORS === 'true',
