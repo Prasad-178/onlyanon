@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import { usePrivy } from '@privy-io/react-auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -46,7 +44,7 @@ export default function NewOfferingPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['offerings'] });
-      toast.success('Offering created successfully!');
+      toast.success('Offering created');
       router.push('/dashboard/offerings');
     },
     onError: (error: Error) => {
@@ -71,130 +69,122 @@ export default function NewOfferingPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="max-w-xl space-y-6">
+      <div className="flex items-center gap-3">
         <Link href="/dashboard/offerings">
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white h-8 w-8 p-0">
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Create Offering</h1>
-          <p className="text-gray-400">Set up a new Q&A product for your fans</p>
+          <h1 className="text-lg font-semibold text-white">Create Offering</h1>
+          <p className="text-sm text-zinc-500">Set up a new Q&A product for your fans</p>
         </div>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
-        <CardHeader>
-          <CardTitle className="text-white">Offering Details</CardTitle>
-          <CardDescription className="text-gray-400">
-            Define what fans will pay you for
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="p-5 rounded-lg bg-zinc-900/50 border border-zinc-800/50">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <label htmlFor="title" className="text-sm text-zinc-300">
+              Title
+            </label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g., Ask Me Anything"
+              className="bg-zinc-800/50 border-zinc-700 text-white text-sm placeholder:text-zinc-600 h-10"
+              required
+            />
+            <p className="text-xs text-zinc-600">
+              A short, catchy name for your offering
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="description" className="text-sm text-zinc-300">
+              Description <span className="text-zinc-600">(optional)</span>
+            </label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What kind of questions will you answer?"
+              className="bg-zinc-800/50 border-zinc-700 text-white text-sm placeholder:text-zinc-600 min-h-[80px]"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title" className="text-white">
-                Title
-              </Label>
+              <label htmlFor="price" className="text-sm text-zinc-300">
+                Price
+              </label>
               <Input
-                id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., Ask Me Anything"
-                className="bg-gray-800 border-gray-700 text-white"
+                id="price"
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0.00"
+                className="bg-zinc-800/50 border-zinc-700 text-white text-sm h-10"
                 required
               />
-              <p className="text-xs text-gray-500">
-                A short, catchy name for your offering
-              </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description" className="text-white">
-                Description (optional)
-              </Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="What kind of questions will you answer?"
-                className="bg-gray-800 border-gray-700 text-white min-h-[100px]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="price" className="text-white">
-                  Price
-                </Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  placeholder="0.00"
-                  className="bg-gray-800 border-gray-700 text-white"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="token" className="text-white">
-                  Token
-                </Label>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant={token === 'SOL' ? 'default' : 'outline'}
-                    className={
-                      token === 'SOL'
-                        ? 'bg-purple-600 hover:bg-purple-700 flex-1'
-                        : 'border-gray-700 text-gray-400 hover:bg-gray-800 flex-1'
-                    }
-                    onClick={() => setToken('SOL')}
-                  >
-                    SOL
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={token === 'USDC' ? 'default' : 'outline'}
-                    className={
-                      token === 'USDC'
-                        ? 'bg-purple-600 hover:bg-purple-700 flex-1'
-                        : 'border-gray-700 text-gray-400 hover:bg-gray-800 flex-1'
-                    }
-                    onClick={() => setToken('USDC')}
-                  >
-                    USDC
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4 pt-4">
-              <Link href="/dashboard/offerings" className="flex-1">
+              <label className="text-sm text-zinc-300">
+                Token
+              </label>
+              <div className="flex gap-2">
                 <Button
                   type="button"
-                  variant="outline"
-                  className="w-full border-gray-700 text-gray-400 hover:bg-gray-800"
+                  variant={token === 'SOL' ? 'default' : 'outline'}
+                  className={
+                    token === 'SOL'
+                      ? 'bg-white text-black hover:bg-zinc-200 flex-1 h-10 text-sm'
+                      : 'border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 flex-1 h-10 text-sm'
+                  }
+                  onClick={() => setToken('SOL')}
                 >
-                  Cancel
+                  SOL
                 </Button>
-              </Link>
-              <Button
-                type="submit"
-                className="flex-1 bg-purple-600 hover:bg-purple-700"
-                disabled={createMutation.isPending}
-              >
-                {createMutation.isPending ? 'Creating...' : 'Create Offering'}
-              </Button>
+                <Button
+                  type="button"
+                  variant={token === 'USDC' ? 'default' : 'outline'}
+                  className={
+                    token === 'USDC'
+                      ? 'bg-white text-black hover:bg-zinc-200 flex-1 h-10 text-sm'
+                      : 'border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 flex-1 h-10 text-sm'
+                  }
+                  onClick={() => setToken('USDC')}
+                >
+                  USDC
+                </Button>
+              </div>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Link href="/dashboard/offerings" className="flex-1">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 h-10 text-sm"
+              >
+                Cancel
+              </Button>
+            </Link>
+            <Button
+              type="submit"
+              className="flex-1 bg-white text-black hover:bg-zinc-200 h-10 text-sm"
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? 'Creating...' : 'Create Offering'}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
