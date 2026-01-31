@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Shield, Wallet, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Shield, Copy, Check, Loader2 } from 'lucide-react';
 import { useShadowWireTransfer } from '@/lib/shadowwire/transfer';
 import { toast } from 'sonner';
 
@@ -54,7 +54,6 @@ export default function AskQuestionPage() {
       const found = data.offerings?.find((o: any) => o.slug === slug);
       if (!found) return null;
 
-      // Get creator data
       const creatorRes = await fetch(`/api/creators?username=${username}`);
       if (!creatorRes.ok) return null;
       const creatorData = await creatorRes.json();
@@ -94,7 +93,6 @@ export default function AskQuestionPage() {
         throw new Error(result.error || 'Transfer failed');
       }
 
-      // Submit question to backend
       const questionRes = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -132,19 +130,19 @@ export default function AskQuestionPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-pulse text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-cyan-400 animate-spin" />
       </div>
     );
   }
 
   if (!offering) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Offering not found</p>
+          <p className="text-zinc-400 mb-4">Offering not found</p>
           <Link href={`/${username}`}>
-            <Button variant="outline" className="border-gray-700">
+            <Button variant="outline" className="border-zinc-700 text-zinc-300">
               Back to Profile
             </Button>
           </Link>
@@ -156,64 +154,66 @@ export default function AskQuestionPage() {
   const creator = offering.creators;
   const avatarUrl = creator.avatar_url?.replace('_normal', '');
 
-  // Success state - show access code
+  // Success state
   if (step === 'success' && accessCode) {
     return (
-      <div className="min-h-screen bg-black">
-        <header className="border-b border-gray-800">
-          <div className="max-w-2xl mx-auto px-4 py-4">
-            <Link href="/" className="text-xl font-bold text-white">
-              OnlyAnon
+      <div className="min-h-screen bg-[#050508] relative">
+        <div className="absolute inset-0 gradient-glow pointer-events-none" />
+
+        <header className="relative z-10 border-b border-white/5">
+          <div className="max-w-2xl mx-auto px-6 py-4">
+            <Link href="/" className="text-lg font-bold text-white">
+              Only<span className="text-cyan-400">Anon</span>
             </Link>
           </div>
         </header>
 
-        <main className="max-w-2xl mx-auto px-4 py-8">
-          <Card className="bg-gray-900 border-gray-800">
+        <main className="relative z-10 max-w-2xl mx-auto px-6 py-12">
+          <Card className="bg-[#0c0c12] border-white/5">
             <CardContent className="p-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
-                <Check className="h-8 w-8 text-green-500" />
+              <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-6">
+                <Check className="h-8 w-8 text-emerald-400" />
               </div>
 
               <h1 className="text-2xl font-bold text-white mb-2">Question Submitted!</h1>
-              <p className="text-gray-400 mb-8">
+              <p className="text-zinc-400 mb-8">
                 Your question has been sent anonymously to {creator.display_name}
               </p>
 
-              <div className="bg-gray-800 rounded-lg p-6 mb-6">
-                <p className="text-sm text-gray-400 mb-3">Your Access Code</p>
+              <div className="bg-[#18181f] rounded-xl p-6 mb-6">
+                <p className="text-sm text-zinc-500 mb-3">Your Access Code</p>
                 <div className="flex items-center justify-center gap-3">
-                  <code className="text-2xl font-mono text-purple-400 tracking-wider">
+                  <code className="text-2xl font-mono text-cyan-400 tracking-wider">
                     {accessCode}
                   </code>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={copyAccessCode}
-                    className="text-gray-400 hover:text-white"
+                    className="text-zinc-400 hover:text-white"
                   >
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
 
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-8 text-left">
-                <p className="text-yellow-500 text-sm font-medium mb-1">
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-8 text-left">
+                <p className="text-amber-400 text-sm font-medium mb-1">
                   Save this code!
                 </p>
-                <p className="text-yellow-500/80 text-sm">
-                  This is the ONLY way to check for your reply. We dont store any link to your identity.
+                <p className="text-amber-400/70 text-sm">
+                  This is your ONLY way to check for your reply. We store zero identifying information.
                 </p>
               </div>
 
               <div className="flex gap-4">
                 <Link href="/check" className="flex-1">
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                  <Button className="w-full gradient-primary text-white hover:opacity-90">
                     Check for Reply
                   </Button>
                 </Link>
                 <Link href={`/${username}`} className="flex-1">
-                  <Button variant="outline" className="w-full border-gray-700 text-gray-400">
+                  <Button variant="outline" className="w-full border-zinc-700 text-zinc-300">
                     Back to Profile
                   </Button>
                 </Link>
@@ -226,58 +226,60 @@ export default function AskQuestionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-[#050508] relative">
+      <div className="absolute inset-0 gradient-glow pointer-events-none" />
+
       {/* Header */}
-      <header className="border-b border-gray-800">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href={`/${username}`} className="flex items-center gap-2 text-gray-400 hover:text-white">
+      <header className="relative z-10 border-b border-white/5">
+        <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href={`/${username}`} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
             <ArrowLeft className="h-4 w-4" />
-            Back
+            <span className="text-sm">Back</span>
           </Link>
-          <WalletMultiButton className="!bg-purple-600 hover:!bg-purple-700" />
+          <WalletMultiButton className="!bg-cyan-500 hover:!bg-cyan-600 !rounded-lg !h-10 !text-sm !font-medium" />
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-8">
+      <main className="relative z-10 max-w-2xl mx-auto px-6 py-8">
         {/* Creator Info */}
         <div className="flex items-center gap-4 mb-6">
-          <Avatar>
+          <Avatar className="h-14 w-14 ring-2 ring-white/10">
             <AvatarImage src={avatarUrl || undefined} alt={creator.display_name} />
-            <AvatarFallback className="bg-gray-800 text-white">
+            <AvatarFallback className="bg-[#18181f] text-white">
               {creator.display_name[0]?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-xl font-bold text-white">{offering.title}</h1>
-            <p className="text-gray-400">@{creator.twitter_username}</p>
+            <p className="text-zinc-500">@{creator.twitter_username}</p>
           </div>
         </div>
 
         {/* Privacy Notice */}
-        <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-purple-600/10 border border-purple-600/20 mb-6">
-          <Shield className="h-4 w-4 text-purple-400" />
-          <p className="text-sm text-purple-300">
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 mb-6">
+          <Shield className="h-4 w-4 text-cyan-400" />
+          <p className="text-sm text-cyan-300">
             Your wallet address will be hidden from {creator.display_name}
           </p>
         </div>
 
         {/* Question Form */}
-        <Card className="bg-gray-900 border-gray-800 mb-6">
+        <Card className="bg-[#0c0c12] border-white/5 mb-6">
           <CardContent className="p-6">
             {offering.description && (
-              <p className="text-gray-400 text-sm mb-4">{offering.description}</p>
+              <p className="text-zinc-500 text-sm mb-4">{offering.description}</p>
             )}
 
             <Textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Type your question here..."
-              className="bg-gray-800 border-gray-700 text-white min-h-[150px] mb-4"
+              className="bg-[#18181f] border-white/10 text-white placeholder:text-zinc-600 min-h-[150px] mb-4 focus:border-cyan-500/50"
               maxLength={1000}
               disabled={step === 'processing'}
             />
 
-            <div className="flex justify-between text-sm text-gray-500">
+            <div className="flex justify-between text-sm text-zinc-600">
               <span>{question.length}/1000</span>
             </div>
           </CardContent>
@@ -285,22 +287,22 @@ export default function AskQuestionPage() {
 
         {/* Payment Summary */}
         {fees && (
-          <Card className="bg-gray-900 border-gray-800 mb-6">
+          <Card className="bg-[#0c0c12] border-white/5 mb-6">
             <CardContent className="p-6">
               <h3 className="text-white font-medium mb-4">Payment Summary</h3>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Price</span>
+                  <span className="text-zinc-500">Price</span>
                   <span className="text-white">{offering.price} {offering.token}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Network Fee ({(fees.feePercentage * 100).toFixed(1)}%)</span>
+                  <span className="text-zinc-500">Network Fee ({(fees.feePercentage * 100).toFixed(1)}%)</span>
                   <span className="text-white">{fees.fee.toFixed(6)} {offering.token}</span>
                 </div>
-                <hr className="border-gray-700 my-2" />
+                <hr className="border-white/5 my-3" />
                 <div className="flex justify-between font-medium">
-                  <span className="text-gray-300">Total</span>
-                  <span className="text-purple-400">{fees.total.toFixed(6)} {offering.token}</span>
+                  <span className="text-zinc-300">Total</span>
+                  <span className="text-cyan-400">{fees.total.toFixed(6)} {offering.token}</span>
                 </div>
               </div>
             </CardContent>
@@ -310,27 +312,27 @@ export default function AskQuestionPage() {
         {/* Submit Button */}
         {!connected ? (
           <div className="text-center">
-            <p className="text-gray-400 mb-4">Connect your wallet to continue</p>
-            <WalletMultiButton className="!bg-purple-600 hover:!bg-purple-700" />
+            <p className="text-zinc-500 mb-4">Connect your wallet to continue</p>
+            <WalletMultiButton className="!bg-cyan-500 hover:!bg-cyan-600 !rounded-lg !h-12 !text-base !font-medium !mx-auto" />
           </div>
         ) : step === 'write' ? (
           <Button
             onClick={() => setStep('confirm')}
             disabled={!question.trim()}
-            className="w-full bg-purple-600 hover:bg-purple-700 h-12"
+            className="w-full gradient-primary text-white hover:opacity-90 h-12 text-base font-medium disabled:opacity-50"
           >
             Continue to Payment
           </Button>
         ) : step === 'confirm' ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             <Button
               onClick={handlePay}
               disabled={isTransferring}
-              className="w-full bg-purple-600 hover:bg-purple-700 h-12"
+              className="w-full gradient-primary text-white hover:opacity-90 h-12 text-base font-medium"
             >
               {isTransferring ? (
                 <span className="flex items-center gap-2">
-                  <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Processing...
                 </span>
               ) : (
@@ -340,7 +342,7 @@ export default function AskQuestionPage() {
             <Button
               onClick={() => setStep('write')}
               variant="ghost"
-              className="w-full text-gray-400"
+              className="w-full text-zinc-500 hover:text-white"
               disabled={isTransferring}
             >
               Go Back
@@ -348,8 +350,8 @@ export default function AskQuestionPage() {
           </div>
         ) : (
           <div className="text-center py-8">
-            <div className="animate-spin h-8 w-8 border-2 border-purple-600 border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-gray-400">Processing your payment...</p>
+            <Loader2 className="h-8 w-8 text-cyan-400 animate-spin mx-auto mb-4" />
+            <p className="text-zinc-500">Processing your payment...</p>
           </div>
         )}
       </main>
