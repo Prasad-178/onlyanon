@@ -3,9 +3,10 @@
 import { useLogin, usePrivy } from '@privy-io/react-auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Twitter } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -16,7 +17,6 @@ export default function LoginPage() {
     onComplete: async (user) => {
       setIsLoggingIn(true);
       try {
-        // Sync creator to database
         await syncCreator(user);
         router.push('/dashboard');
       } catch (error) {
@@ -38,47 +38,67 @@ export default function LoginPage() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-gray-400">Loading...</div>
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-cyan-400 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-gray-900 border-gray-800">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome to OnlyAnon</CardTitle>
-          <CardDescription className="text-gray-400">
-            Sign in with Twitter to start receiving anonymous questions and get paid
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Button
-            onClick={() => login()}
-            disabled={isLoggingIn}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-            size="lg"
-          >
-            {isLoggingIn ? (
-              <span className="flex items-center gap-2">
-                <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                Connecting...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Twitter className="h-5 w-5" />
-                Continue with Twitter / X
-              </span>
-            )}
-          </Button>
+    <div className="min-h-screen bg-[#050508] relative">
+      <div className="absolute inset-0 gradient-glow pointer-events-none" />
 
-          <p className="text-xs text-center text-gray-500">
-            By signing in, you agree to our Terms of Service and Privacy Policy.
-            A Solana wallet will be automatically created for you.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Header */}
+      <header className="relative z-10 border-b border-white/5">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-sm">Back</span>
+          </Link>
+          <Link href="/" className="text-lg font-bold text-white">
+            Only<span className="text-cyan-400">Anon</span>
+          </Link>
+          <div className="w-16" />
+        </div>
+      </header>
+
+      <main className="relative z-10 flex items-center justify-center min-h-[calc(100vh-65px)] p-6">
+        <Card className="w-full max-w-md bg-[#0c0c12] border-white/5">
+          <CardContent className="p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold text-white mb-2">Welcome to OnlyAnon</h1>
+              <p className="text-zinc-500">
+                Sign in with Twitter to start receiving anonymous questions and get paid
+              </p>
+            </div>
+
+            <Button
+              onClick={() => login()}
+              disabled={isLoggingIn}
+              className="w-full h-12 text-base font-medium bg-[#1DA1F2] hover:bg-[#1a8cd8] text-white"
+            >
+              {isLoggingIn ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Connecting...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                  Continue with X
+                </span>
+              )}
+            </Button>
+
+            <p className="text-xs text-center text-zinc-600 mt-6">
+              By signing in, you agree to our Terms of Service and Privacy Policy.
+              A Solana wallet will be automatically created for you.
+            </p>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }
