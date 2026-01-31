@@ -14,7 +14,7 @@ import {
   X,
   Home,
 } from 'lucide-react';
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 const navItems = [
@@ -22,6 +22,36 @@ const navItems = [
   { href: '/dashboard/offerings', label: 'Offerings', icon: Package },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
+
+// Sync creator to database if not exists
+async function syncCreatorToDb(user: any) {
+  const twitter = user.twitter;
+  const wallet = user.linkedAccounts?.find(
+    (account: any) => account.type === 'wallet' && account.chainType === 'solana'
+  ) as { address?: string } | undefined;
+
+  if (!twitter) return;
+
+  const walletAddress = wallet?.address || user.wallet?.address;
+  if (!walletAddress) return;
+
+  try {
+    await fetch('/api/creators', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        privy_did: user.id,
+        twitter_id: twitter.subject,
+        twitter_username: twitter.username,
+        display_name: twitter.name || twitter.username,
+        avatar_url: twitter.profilePictureUrl?.replace('_normal', ''),
+        wallet_address: walletAddress,
+      }),
+    });
+  } catch (error) {
+    console.error('Failed to sync creator:', error);
+  }
+}
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -33,12 +63,22 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     },
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const hasSynced = useRef(false);
 
+  // Redirect if not authenticated
   useEffect(() => {
     if (ready && !authenticated) {
       router.push('/login');
     }
   }, [ready, authenticated, router]);
+
+  // Sync creator to DB on dashboard load (ensures record exists)
+  useEffect(() => {
+    if (ready && authenticated && user && !hasSynced.current) {
+      hasSynced.current = true;
+      syncCreatorToDb(user);
+    }
+  }, [ready, authenticated, user]);
 
   if (!ready) {
     return (
