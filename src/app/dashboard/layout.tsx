@@ -12,10 +12,13 @@ import {
   LogOut,
   Menu,
   X,
-  Home,
+  ExternalLink,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { useState, ReactNode, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const navItems = [
   { href: '/dashboard', label: 'Questions', icon: MessageSquare },
@@ -23,7 +26,6 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
-// Sync creator to database if not exists
 async function syncCreatorToDb(user: any) {
   const twitter = user.twitter;
   const wallet = user.linkedAccounts?.find(
@@ -63,16 +65,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     },
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const hasSynced = useRef(false);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (ready && !authenticated) {
       router.push('/login');
     }
   }, [ready, authenticated, router]);
 
-  // Sync creator to DB on dashboard load (ensures record exists)
   useEffect(() => {
     if (ready && authenticated && user && !hasSynced.current) {
       hasSynced.current = true;
@@ -80,10 +81,19 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   }, [ready, authenticated, user]);
 
+  const copyProfileUrl = () => {
+    if (username) {
+      navigator.clipboard.writeText(`${window.location.origin}/${username}`);
+      setCopied(true);
+      toast.success('Profile URL copied!');
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="animate-pulse text-gray-400">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#050508]">
+        <div className="animate-pulse text-zinc-500">Loading...</div>
       </div>
     );
   }
@@ -98,16 +108,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const username = twitter?.username || '';
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-[#050508]">
       {/* Mobile header */}
-      <header className="lg:hidden flex items-center justify-between p-4 border-b border-gray-800">
+      <header className="lg:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0a0a0f]">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-gray-400 hover:text-white"
+          className="text-zinc-400 hover:text-white"
         >
           {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
-        <span className="font-bold text-white">OnlyAnon</span>
+        <span className="font-bold text-white">
+          Only<span className="text-cyan-400">Anon</span>
+        </span>
         <div className="w-6" />
       </header>
 
@@ -115,34 +127,50 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Sidebar */}
         <aside
           className={`
-            fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 border-r border-gray-800 transform transition-transform lg:translate-x-0 lg:static
+            fixed inset-y-0 left-0 z-50 w-72 bg-[#0a0a0f] border-r border-white/5 transform transition-transform lg:translate-x-0 lg:static
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
         >
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="p-4 border-b border-gray-800">
-              <Link href="/" className="flex items-center gap-2 text-white">
-                <Home className="h-5 w-5" />
-                <span className="font-bold text-lg">OnlyAnon</span>
+            <div className="p-6 border-b border-white/5">
+              <Link href="/" className="text-xl font-bold text-white">
+                Only<span className="text-cyan-400">Anon</span>
               </Link>
             </div>
 
             {/* User info */}
-            <div className="p-4 border-b border-gray-800">
-              <div className="flex items-center gap-3">
-                <Avatar>
+            <div className="p-6 border-b border-white/5">
+              <div className="flex items-center gap-3 mb-4">
+                <Avatar className="h-12 w-12 ring-2 ring-white/10">
                   <AvatarImage src={avatarUrl} alt={displayName} />
-                  <AvatarFallback>{displayName[0]?.toUpperCase()}</AvatarFallback>
+                  <AvatarFallback className="bg-[#18181f] text-white">
+                    {displayName[0]?.toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <div className="text-white font-medium truncate">{displayName}</div>
-                  <div className="text-gray-400 text-sm truncate">@{username}</div>
+                  <div className="text-zinc-500 text-sm truncate">@{username}</div>
                 </div>
               </div>
               {username && (
-                <div className="mt-3 p-2 bg-gray-800 rounded text-xs text-gray-400">
-                  Your page: <span className="text-purple-400">/{username}</span>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 px-3 py-2 bg-[#18181f] rounded-lg text-sm text-zinc-400 truncate">
+                    /{username}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={copyProfileUrl}
+                    className="text-zinc-500 hover:text-white shrink-0"
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                  <Link href={`/${username}`} target="_blank">
+                    <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white shrink-0">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -151,17 +179,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <nav className="flex-1 p-4 space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href;
+                const isActive = pathname === item.href ||
+                  (item.href !== '/dashboard' && pathname.startsWith(item.href));
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={`
-                      flex items-center gap-3 px-3 py-2 rounded-lg transition-colors
+                      flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium
                       ${isActive
-                        ? 'bg-purple-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                        ? 'bg-cyan-500/10 text-cyan-400'
+                        : 'text-zinc-400 hover:text-white hover:bg-white/5'
                       }
                     `}
                   >
@@ -173,10 +202,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </nav>
 
             {/* Logout */}
-            <div className="p-4 border-t border-gray-800">
+            <div className="p-4 border-t border-white/5">
               <Button
                 variant="ghost"
-                className="w-full justify-start text-gray-400 hover:text-white hover:bg-gray-800"
+                className="w-full justify-start text-zinc-500 hover:text-white hover:bg-white/5 font-medium"
                 onClick={() => logout()}
               >
                 <LogOut className="h-5 w-5 mr-3" />
@@ -189,14 +218,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
         {/* Main content */}
-        <main className="flex-1 min-h-screen lg:min-h-[calc(100vh-0px)]">
-          <div className="p-4 lg:p-8">{children}</div>
+        <main className="flex-1 min-h-screen">
+          <div className="p-6 lg:p-8 max-w-5xl">{children}</div>
         </main>
       </div>
     </div>
