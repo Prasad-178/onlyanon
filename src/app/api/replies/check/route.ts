@@ -58,7 +58,9 @@ export async function POST(request: NextRequest) {
     // Return question and reply (if exists) - NO fan data exposed
     const offering = question.offerings as any;
     const creator = offering?.creators as any;
-    const reply = (question.replies as any[])?.[0];
+    // Handle both array (standard) and object (unique FK) cases
+    const replies = question.replies as any;
+    const reply = Array.isArray(replies) ? replies[0] : replies;
 
     return NextResponse.json({
       question: {
