@@ -307,8 +307,8 @@ export default function Home() {
     offset: ["start start", "end start"]
   });
 
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.8], [0, 50]);
 
   return (
     <div className="min-h-screen bg-[#09090b] overflow-hidden">
