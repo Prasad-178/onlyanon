@@ -427,20 +427,12 @@ export default function Home() {
                     </Link>
                   </motion.div>
 
-                  <motion.div variants={fadeInUp} transition={{ duration: 0.6, delay: 0.4 }} className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-zinc-500">
-                    {['No account to ask', 'Instant payments', 'Zero tracking'].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-emerald-500" />
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </motion.div>
                 </motion.div>
 
                 {/* Right: Demo Card - Creator Profile */}
                 <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/10 to-indigo-500/20 rounded-3xl blur-2xl" />
-                  <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-700/50 overflow-hidden backdrop-blur-xl p-6">
+                  <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/10 to-indigo-500/20 rounded-3xl blur-2xl opacity-60" />
+                  <div className="relative rounded-2xl bg-zinc-900 border border-zinc-700/50 overflow-hidden p-6">
                     {/* Profile Header */}
                     <div className="flex items-center gap-4 mb-5">
                       <img
