@@ -97,26 +97,26 @@ export default function SettingsPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.15 }}
-          className="rounded-2xl bg-zinc-900/80 border border-zinc-800/80 p-5"
+          className="rounded-2xl bg-zinc-900/80 border border-zinc-800/80 p-4 overflow-hidden"
         >
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+            <div className="shrink-0 w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center">
               <Link2 className="w-4 h-4 text-indigo-400" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h3 className="text-sm font-medium text-white">Public Profile</h3>
               <p className="text-xs text-zinc-500">Share this link with your fans</p>
             </div>
           </div>
 
           {profileUrl && (
-            <div className="flex items-center gap-2">
-              <div className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 font-mono text-sm text-zinc-300 truncate overflow-hidden">
+            <div className="flex items-center gap-2 overflow-hidden">
+              <div className="flex-1 min-w-0 px-3 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 font-mono text-xs text-zinc-300 truncate">
                 {profileUrl}
               </div>
               <motion.button
                 onClick={() => copyToClipboard(profileUrl, 'profile')}
-                className="relative h-11 w-11 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
+                className="shrink-0 h-10 w-10 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
                 whileTap={{ scale: 0.95 }}
               >
                 <AnimatePresence mode="wait">
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                 href={profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-11 w-11 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
+                className="shrink-0 h-10 w-10 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
               >
                 <ExternalLink className="w-4 h-4" />
               </a>
@@ -158,31 +158,31 @@ export default function SettingsPage() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
-          className="rounded-2xl bg-zinc-900/80 border border-zinc-800/80 p-5"
+          className="rounded-2xl bg-zinc-900/80 border border-zinc-800/80 p-4 overflow-hidden"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
+          <div className="flex items-center justify-between mb-4 gap-2">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="shrink-0 w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
                 <Wallet className="w-4 h-4 text-purple-400" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h3 className="text-sm font-medium text-white">Wallet</h3>
                 <p className="text-xs text-zinc-500">Receives all payments</p>
               </div>
             </div>
-            <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#9945FF]/10 to-[#14F195]/10 border border-[#9945FF]/20 text-xs font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#9945FF] to-[#14F195]">
+            <span className="shrink-0 px-2 py-1 rounded-lg bg-gradient-to-r from-[#9945FF]/10 to-[#14F195]/10 border border-[#9945FF]/20 text-xs font-medium text-transparent bg-clip-text bg-gradient-to-r from-[#9945FF] to-[#14F195]">
               Solana
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 overflow-hidden">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <div className="flex-1 min-w-0 px-3 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 overflow-hidden">
               <div className="font-mono text-sm text-white">{truncateAddress(walletAddress)}</div>
-              <div className="text-xs text-zinc-500 mt-0.5 font-mono truncate break-all">{walletAddress}</div>
+              <div className="text-xs text-zinc-500 mt-0.5 font-mono truncate">{walletAddress}</div>
             </div>
             <motion.button
               onClick={() => copyToClipboard(walletAddress, 'wallet')}
-              className="relative h-11 w-11 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
+              className="shrink-0 h-10 w-10 rounded-xl bg-zinc-800 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors"
               whileTap={{ scale: 0.95 }}
             >
               <AnimatePresence mode="wait">

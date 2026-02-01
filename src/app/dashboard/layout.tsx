@@ -22,18 +22,18 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
-async function syncCreatorToDb(user: any) {
+async function syncCreatorToDb(user: any): Promise<boolean> {
   const twitter = user.twitter;
   const wallet = user.linkedAccounts?.find(
     (account: any) => account.type === 'wallet' && account.chainType === 'solana'
   ) as { address?: string } | undefined;
 
-  if (!twitter) return;
+  if (!twitter) return false;
   const walletAddress = wallet?.address || user.wallet?.address;
-  if (!walletAddress) return;
+  if (!walletAddress) return false;
 
   try {
-    await fetch('/api/creators', {
+    const response = await fetch('/api/creators', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -45,8 +45,10 @@ async function syncCreatorToDb(user: any) {
         wallet_address: walletAddress,
       }),
     });
+    return response.ok;
   } catch (error) {
     console.error('Failed to sync creator:', error);
+    return false;
   }
 }
 
@@ -57,6 +59,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { logout } = useLogout({ onSuccess: () => router.push('/') });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(true);
   const hasSynced = useRef(false);
 
   useEffect(() => {
@@ -64,10 +67,22 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   }, [ready, authenticated, router]);
 
   useEffect(() => {
-    if (ready && authenticated && user && !hasSynced.current) {
-      hasSynced.current = true;
-      syncCreatorToDb(user);
+    async function doSync() {
+      if (ready && authenticated && user && !hasSynced.current) {
+        hasSynced.current = true;
+        setIsSyncing(true);
+        const success = await syncCreatorToDb(user);
+        if (!success) {
+          // Retry once after a short delay
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await syncCreatorToDb(user);
+        }
+        setIsSyncing(false);
+      } else if (ready && authenticated) {
+        setIsSyncing(false);
+      }
     }
+    doSync();
   }, [ready, authenticated, user]);
 
   const copyProfileUrl = () => {
@@ -79,7 +94,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   };
 
-  if (!ready) {
+  if (!ready || isSyncing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b]">
         <Loader2 className="h-5 w-5 text-zinc-500 animate-spin" />
