@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
-import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import {
   MessageSquare,
@@ -301,14 +301,6 @@ function AnimatedFlowDiagram() {
 
 export default function Home() {
   const { authenticated, ready } = usePrivy();
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"]
-  });
-
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.8], [0, 50]);
 
   return (
     <div className="min-h-screen bg-[#09090b] overflow-hidden">
@@ -379,8 +371,8 @@ export default function Home() {
 
       <main className="relative z-10">
         {/* Hero Section */}
-        <section ref={heroRef} className="relative pt-24 pb-20 md:pt-32 md:pb-32">
-          <motion.div className="px-6" style={{ opacity: heroOpacity, y: heroY }}>
+        <section className="relative pt-24 pb-20 md:pt-32 md:pb-32">
+          <div className="px-6">
             <div className="max-w-7xl mx-auto">
               <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                 {/* Left: Content */}
@@ -473,7 +465,7 @@ export default function Home() {
                 </motion.div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Scroll indicator at bottom of hero */}
           <motion.div className="flex justify-center mt-16 md:mt-24" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
