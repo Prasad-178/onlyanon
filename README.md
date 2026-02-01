@@ -1,6 +1,12 @@
-# OnlyAnon
+<p align="center">
+  <img src="public/onlyanon_full.png" alt="OnlyAnon" width="400" />
+</p>
 
-**Get paid for anonymous questions.** A privacy-first Q&A platform where fans pay creators to ask questions while remaining completely anonymous through zero-knowledge proofs on Solana.
+<p align="center">
+  <strong>Get paid for anonymous questions.</strong>
+</p>
+
+--- A privacy-first Q&A platform where fans pay creators to ask questions while remaining completely anonymous through zero-knowledge proofs on Solana.
 
 ## Overview
 
