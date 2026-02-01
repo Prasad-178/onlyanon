@@ -129,12 +129,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className="flex lg:pt-0 pt-14">
         {/* Sidebar */}
         <aside className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0b] border-r border-zinc-800/80
+          fixed left-0 z-50 w-64 bg-[#0a0a0b] border-r border-zinc-800/80
           transform transition-transform duration-200 lg:translate-x-0 lg:static
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:top-0 top-14
+          lg:top-0 lg:bottom-0 lg:h-screen
+          top-14 bottom-0 h-[calc(100dvh-3.5rem)]
         `}>
-          <div className="flex flex-col h-full overflow-y-auto">
+          <div className="flex flex-col h-full max-h-full overflow-y-auto overscroll-contain">
             {/* Logo - hidden on mobile since we have the header */}
             <div className="h-14 hidden lg:flex items-center px-5 border-b border-zinc-800/80">
               <Link href="/" className="flex items-center gap-2">
@@ -216,8 +217,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 min-h-screen">
-          <div className="max-w-4xl mx-auto px-6 py-8 lg:py-12">{children}</div>
+        <main className="flex-1 min-h-screen min-w-0 overflow-x-hidden">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 lg:py-12">{children}</div>
         </main>
       </div>
     </div>
