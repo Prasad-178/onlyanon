@@ -64,9 +64,7 @@ export default function LoginPage() {
             <span className="text-sm font-medium">Back</span>
           </Link>
           <Link href="/" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
+            <img src="/onlyanon_logo.png" alt="OnlyAnon" className="w-9 h-9" />
             <span className="font-semibold text-white text-xl tracking-tight">OnlyAnon</span>
           </Link>
           <div className="w-16" />
@@ -86,9 +84,7 @@ export default function LoginPage() {
               <div className="p-8 md:p-10">
                 {/* Logo */}
                 <div className="flex justify-center mb-8">
-                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-500/30">
-                    <Sparkles className="h-10 w-10 text-white" />
-                  </div>
+                  <img src="/onlyanon_full.png" alt="OnlyAnon" className="h-24" />
                 </div>
 
                 {/* Text */}

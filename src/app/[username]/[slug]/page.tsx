@@ -148,9 +148,7 @@ export default function AskQuestionPage() {
         >
           <div className="relative">
             <div className="absolute inset-0 bg-indigo-500/30 rounded-2xl blur-xl animate-pulse" />
-            <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
-              <Sparkles className="h-7 w-7 text-white" />
-            </div>
+            <img src="/onlyanon_logo.png" alt="OnlyAnon" className="relative w-16 h-16" />
           </div>
           <div className="flex items-center gap-3">
             <Loader2 className="h-4 w-4 text-indigo-400 animate-spin" />
@@ -228,9 +226,7 @@ export default function AskQuestionPage() {
         <header className="fixed top-0 left-0 right-0 z-50">
           <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-center">
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
-                <Sparkles className="h-4 w-4 text-white" />
-              </div>
+              <img src="/onlyanon_logo.png" alt="OnlyAnon" className="w-8 h-8 group-hover:scale-105 transition-transform" />
               <span className="font-bold text-white text-lg tracking-tight">OnlyAnon</span>
             </Link>
           </div>
@@ -419,9 +415,7 @@ export default function AskQuestionPage() {
             </Link>
 
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <Sparkles className="h-4 w-4 text-white" />
-              </div>
+              <img src="/onlyanon_logo.png" alt="OnlyAnon" className="w-8 h-8 group-hover:scale-105 transition-transform" />
               <span className="font-bold text-white text-lg tracking-tight">OnlyAnon</span>
             </Link>
 

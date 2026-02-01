@@ -94,9 +94,7 @@ export default function CheckReplyPage() {
             <span className="text-sm">Home</span>
           </Link>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
+            <img src="/onlyanon_logo.png" alt="OnlyAnon" className="w-8 h-8" />
             <span className="font-semibold text-white text-lg tracking-tight">OnlyAnon</span>
           </Link>
           <div className="w-16" />

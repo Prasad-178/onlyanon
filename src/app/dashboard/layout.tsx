@@ -12,22 +12,7 @@ import { toast } from 'sonner';
 // Logo component
 function Logo({ className = "w-8 h-8" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" fill="none" className={className}>
-      <defs>
-        <linearGradient id="dashLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#818cf8" />
-          <stop offset="100%" stopColor="#6366f1" />
-        </linearGradient>
-        <linearGradient id="dashInnerGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#a5b4fc" />
-          <stop offset="100%" stopColor="#c7d2fe" />
-        </linearGradient>
-      </defs>
-      <rect width="40" height="40" rx="10" fill="url(#dashLogoGradient)" />
-      <path d="M20 8C13.373 8 8 13.373 8 20s5.373 12 12 12 12-5.373 12-12S26.627 8 20 8zm0 4c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8z" fill="url(#dashInnerGradient)" opacity="0.9" />
-      <circle cx="20" cy="20" r="4" fill="white" />
-      <path d="M20 16v-4M20 28v-4M16 20h-4M28 20h-4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
-    </svg>
+    <img src="/onlyanon_logo.png" alt="OnlyAnon" className={className} />
   );
 }
 
