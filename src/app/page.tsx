@@ -465,48 +465,37 @@ export default function Home() {
                 {/* Right: Demo Card - Creator Profile */}
                 <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/10 to-indigo-500/20 rounded-3xl blur-2xl" />
-                  <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-700/50 overflow-hidden backdrop-blur-xl">
-                    {/* Profile Header Banner */}
-                    <div className="relative h-20 bg-gradient-to-r from-[#9945FF] to-[#14F195]">
-                      <div className="absolute inset-0 bg-black/10" />
-                    </div>
-
-                    {/* Profile Content */}
-                    <div className="px-5 pb-5">
-                      {/* Avatar */}
-                      <div className="-mt-10 mb-3">
-                        <div className="w-20 h-20 rounded-full border-4 border-zinc-900 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
-                          T
-                        </div>
+                  <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-700/50 overflow-hidden backdrop-blur-xl p-6">
+                    {/* Profile Header */}
+                    <div className="flex items-center gap-4 mb-5">
+                      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center text-2xl font-bold text-white shadow-lg shrink-0">
+                        T
                       </div>
-
-                      {/* Name and Handle */}
-                      <div className="mb-3">
+                      <div className="flex-1 min-w-0">
                         <p className="font-bold text-white text-lg flex items-center gap-2">
                           toly
-                          <svg className="h-5 w-5 text-[#1D9BF0]" viewBox="0 0 22 22" fill="currentColor"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"/></svg>
+                          <svg className="h-4 w-4 text-[#1D9BF0]" viewBox="0 0 22 22" fill="currentColor"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"/></svg>
                         </p>
                         <p className="text-sm text-zinc-500">@aeyakovenko</p>
+                        <p className="text-zinc-400 text-xs mt-1">Co-founder of Solana</p>
                       </div>
-
-                      <p className="text-zinc-400 text-sm mb-4">Co-founder of Solana. Building the fastest blockchain.</p>
-
-                      {/* Offering Card */}
-                      <div className="rounded-xl bg-zinc-800/60 border border-zinc-700/50 p-4 mb-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs text-zinc-500 font-medium uppercase tracking-wide">Ask Me Anything</span>
-                          <span className="text-sm font-bold text-white">5 SOL</span>
-                        </div>
-                        <p className="text-zinc-300 text-sm">Questions about Solana, crypto, building, life advice...</p>
-                      </div>
-
-                      <motion.div className="flex items-center gap-2 text-xs" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }}>
-                        <Lock className="h-3.5 w-3.5 text-indigo-400" />
-                        <span className="text-indigo-300">Your wallet will be hidden from toly</span>
-                      </motion.div>
                     </div>
 
-                    <motion.div className="absolute top-2 right-2 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[11px] font-medium" animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                    {/* Offering Card */}
+                    <div className="rounded-xl bg-zinc-800/60 border border-zinc-700/50 p-4 mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-zinc-500 font-medium uppercase tracking-wide">Ask Me Anything</span>
+                        <span className="text-sm font-bold text-white">5 SOL</span>
+                      </div>
+                      <p className="text-zinc-300 text-sm">Questions about Solana, crypto, building, life advice...</p>
+                    </div>
+
+                    <motion.div className="flex items-center gap-2 text-xs" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }}>
+                      <Lock className="h-3.5 w-3.5 text-indigo-400" />
+                      <span className="text-indigo-300">Your wallet will be hidden from toly</span>
+                    </motion.div>
+
+                    <motion.div className="absolute top-4 right-4 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[11px] font-medium" animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity }}>
                       <span className="flex items-center gap-1">
                         <Shield className="h-3 w-3" /> Anonymous
                       </span>
