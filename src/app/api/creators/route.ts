@@ -66,15 +66,50 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const username = searchParams.get('username');
+    const list = searchParams.get('list');
 
+    const supabase = await createServiceClient();
+
+    // If list=true, return all active creators with at least one offering
+    if (list === 'true') {
+      const { data: creators, error } = await supabase
+        .from('creators')
+        .select(`
+          id,
+          twitter_username,
+          display_name,
+          avatar_url,
+          bio,
+          offerings!inner (id)
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) {
+        console.error('Supabase error:', error);
+        return NextResponse.json(
+          { error: 'Failed to fetch creators' },
+          { status: 500 }
+        );
+      }
+
+      // Transform to remove the offerings array (we just needed it for the inner join)
+      const creatorsWithOfferings = creators?.map(({ offerings, ...creator }) => ({
+        ...creator,
+        offering_count: offerings?.length || 0,
+      })) || [];
+
+      return NextResponse.json({ creators: creatorsWithOfferings });
+    }
+
+    // Otherwise, get a specific creator by username
     if (!username) {
       return NextResponse.json(
         { error: 'Username is required' },
         { status: 400 }
       );
     }
-
-    const supabase = await createServiceClient();
 
     const { data: creator, error } = await supabase
       .from('creators')
