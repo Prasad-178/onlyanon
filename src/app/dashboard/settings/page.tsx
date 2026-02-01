@@ -111,7 +111,7 @@ export default function SettingsPage() {
 
           {profileUrl && (
             <div className="flex items-center gap-2">
-              <div className="flex-1 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 font-mono text-sm text-zinc-300 truncate">
+              <div className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 font-mono text-sm text-zinc-300 truncate overflow-hidden">
                 {profileUrl}
               </div>
               <motion.button
@@ -176,7 +176,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex-1 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50">
+            <div className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 overflow-hidden">
               <div className="font-mono text-sm text-white">{truncateAddress(walletAddress)}</div>
               <div className="text-xs text-zinc-500 mt-0.5 font-mono truncate">{walletAddress}</div>
             </div>

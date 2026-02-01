@@ -21,7 +21,7 @@ export function OnlyAnonPrivyProvider({ children }: { children: ReactNode }) {
         appearance: {
           theme: 'dark',
           accentColor: '#8B5CF6',
-          logo: '/logo.png',
+          logo: '/onlyanon_full.png',
           landingHeader: 'Sign in to OnlyAnon',
           loginMessage: 'Connect with Twitter to start receiving anonymous questions',
         },
