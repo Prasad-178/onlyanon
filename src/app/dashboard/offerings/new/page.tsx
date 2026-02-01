@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Package, DollarSign, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -44,7 +44,7 @@ export default function NewOfferingPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['offerings'] });
-      toast.success('Offering created');
+      toast.success('Offering created successfully');
       router.push('/dashboard/offerings');
     },
     onError: (error: Error) => {
@@ -69,23 +69,26 @@ export default function NewOfferingPage() {
   };
 
   return (
-    <div className="max-w-xl space-y-6">
-      <div className="flex items-center gap-3">
+    <div className="max-w-xl space-y-8">
+      {/* Header */}
+      <div className="flex items-center gap-4">
         <Link href="/dashboard/offerings">
-          <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white h-8 w-8 p-0">
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl">
+            <ArrowLeft className="h-5 w-5" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-lg font-semibold text-white">Create Offering</h1>
-          <p className="text-sm text-zinc-500">Set up a new Q&A product for your fans</p>
+          <h1 className="text-2xl font-bold text-white">Create Offering</h1>
+          <p className="text-zinc-500">Set up a new Q&A product for your fans</p>
         </div>
       </div>
 
-      <div className="p-5 rounded-lg bg-zinc-900/50 border border-zinc-800/50">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Form Card */}
+      <div className="rounded-xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50 p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Title */}
           <div className="space-y-2">
-            <label htmlFor="title" className="text-sm text-zinc-300">
+            <label htmlFor="title" className="text-sm font-medium text-zinc-300">
               Title
             </label>
             <Input
@@ -93,7 +96,7 @@ export default function NewOfferingPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g., Ask Me Anything"
-              className="bg-zinc-800/50 border-zinc-700 text-white text-sm placeholder:text-zinc-600 h-10"
+              className="bg-zinc-900/80 border-zinc-700 text-white text-base placeholder:text-zinc-600 h-12 rounded-xl focus:border-indigo-500 focus:ring-indigo-500/20"
               required
             />
             <p className="text-xs text-zinc-600">
@@ -101,8 +104,9 @@ export default function NewOfferingPage() {
             </p>
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
-            <label htmlFor="description" className="text-sm text-zinc-300">
+            <label htmlFor="description" className="text-sm font-medium text-zinc-300">
               Description <span className="text-zinc-600">(optional)</span>
             </label>
             <Textarea
@@ -110,53 +114,55 @@ export default function NewOfferingPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What kind of questions will you answer?"
-              className="bg-zinc-800/50 border-zinc-700 text-white text-sm placeholder:text-zinc-600 min-h-[80px]"
+              className="bg-zinc-900/80 border-zinc-700 text-white text-base placeholder:text-zinc-600 min-h-[100px] rounded-xl focus:border-indigo-500 focus:ring-indigo-500/20 resize-none"
             />
           </div>
 
+          {/* Price & Token */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="price" className="text-sm text-zinc-300">
+              <label htmlFor="price" className="text-sm font-medium text-zinc-300">
                 Price
               </label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                min="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="0.00"
-                className="bg-zinc-800/50 border-zinc-700 text-white text-sm h-10"
-                required
-              />
+              <div className="relative">
+                <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  placeholder="0.00"
+                  className="bg-zinc-900/80 border-zinc-700 text-white text-base h-12 pl-10 rounded-xl focus:border-indigo-500 focus:ring-indigo-500/20"
+                  required
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-zinc-300">
+              <label className="text-sm font-medium text-zinc-300">
                 Token
               </label>
               <div className="flex gap-2">
                 <Button
                   type="button"
-                  variant={token === 'SOL' ? 'default' : 'outline'}
-                  className={
+                  className={`flex-1 h-12 text-base font-medium rounded-xl transition-all ${
                     token === 'SOL'
-                      ? 'bg-white text-black hover:bg-zinc-200 flex-1 h-10 text-sm'
-                      : 'border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 flex-1 h-10 text-sm'
-                  }
+                      ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                      : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                  }`}
                   onClick={() => setToken('SOL')}
                 >
                   SOL
                 </Button>
                 <Button
                   type="button"
-                  variant={token === 'USDC' ? 'default' : 'outline'}
-                  className={
+                  className={`flex-1 h-12 text-base font-medium rounded-xl transition-all ${
                     token === 'USDC'
-                      ? 'bg-white text-black hover:bg-zinc-200 flex-1 h-10 text-sm'
-                      : 'border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 flex-1 h-10 text-sm'
-                  }
+                      ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                      : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                  }`}
                   onClick={() => setToken('USDC')}
                 >
                   USDC
@@ -165,22 +171,33 @@ export default function NewOfferingPage() {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2">
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
             <Link href="/dashboard/offerings" className="flex-1">
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 h-10 text-sm"
+                className="w-full h-12 text-base font-medium rounded-xl border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800"
               >
                 Cancel
               </Button>
             </Link>
             <Button
               type="submit"
-              className="flex-1 bg-white text-black hover:bg-zinc-200 h-10 text-sm"
+              className="flex-1 h-12 text-base font-medium rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/20"
               disabled={createMutation.isPending}
             >
-              {createMutation.isPending ? 'Creating...' : 'Create Offering'}
+              {createMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Creating...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  Create Offering
+                </span>
+              )}
             </Button>
           </div>
         </form>

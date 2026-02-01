@@ -15,15 +15,18 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Sparkles,
+  Loader2,
+  Home,
 } from 'lucide-react';
 import { useState, ReactNode, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 const navItems = [
-  { href: '/dashboard', label: 'Questions', icon: MessageSquare },
-  { href: '/dashboard/offerings', label: 'Offerings', icon: Package },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+  { href: '/dashboard', label: 'Questions', icon: MessageSquare, description: 'Manage incoming questions' },
+  { href: '/dashboard/offerings', label: 'Offerings', icon: Package, description: 'Your question topics' },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings, description: 'Account preferences' },
 ];
 
 async function syncCreatorToDb(user: any) {
@@ -91,7 +94,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
-        <div className="text-zinc-600 text-sm">Loading...</div>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+            <Sparkles className="h-6 w-6 text-white" />
+          </div>
+          <Loader2 className="h-5 w-5 text-indigo-400 animate-spin" />
+        </div>
       </div>
     );
   }
@@ -106,68 +114,89 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-[#09090b]">
       {/* Mobile header */}
-      <header className="lg:hidden flex items-center justify-between px-4 h-14 border-b border-zinc-800/50">
-        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-zinc-400">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 px-4 flex items-center justify-between bg-[#09090b]/95 backdrop-blur-sm border-b border-zinc-800/50">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="w-10 h-10 flex items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors"
+        >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
-        <span className="font-semibold text-white text-sm">OnlyAnon</span>
-        <div className="w-5" />
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
+            <Sparkles className="h-4 w-4 text-white" />
+          </div>
+          <span className="font-semibold text-white text-lg">OnlyAnon</span>
+        </Link>
+        <div className="w-10" />
       </header>
 
-      <div className="flex">
+      <div className="flex lg:pt-0 pt-16">
         {/* Sidebar */}
         <aside
           className={`
-            fixed inset-y-0 left-0 z-50 w-64 bg-[#09090b] border-r border-zinc-800/50
-            transform transition-transform lg:translate-x-0 lg:static
+            fixed inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-zinc-900/95 to-[#09090b] border-r border-zinc-800/50
+            transform transition-transform duration-300 lg:translate-x-0 lg:static
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           `}
         >
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="h-14 flex items-center px-5 border-b border-zinc-800/50">
-              <Link href="/" className="font-semibold text-white">OnlyAnon</Link>
+            <div className="h-16 flex items-center justify-between px-5 border-b border-zinc-800/50">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                  <Sparkles className="h-4 w-4 text-white" />
+                </div>
+                <span className="font-semibold text-white text-lg tracking-tight">OnlyAnon</span>
+              </Link>
+              <Link href="/" className="text-zinc-500 hover:text-white transition-colors">
+                <Home className="h-4 w-4" />
+              </Link>
             </div>
 
-            {/* User */}
-            <div className="p-4 border-b border-zinc-800/50">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={avatarUrl} alt={displayName} />
-                  <AvatarFallback className="bg-zinc-800 text-zinc-400 text-sm">
-                    {displayName[0]?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white truncate">{displayName}</div>
-                  <div className="text-xs text-zinc-500 truncate">@{username}</div>
+            {/* User Profile Card */}
+            <div className="p-4">
+              <div className="rounded-xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50 p-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <Avatar className="h-11 w-11 ring-2 ring-zinc-700">
+                    <AvatarImage src={avatarUrl} alt={displayName} />
+                    <AvatarFallback className="bg-gradient-to-br from-indigo-500/20 to-indigo-600/20 text-indigo-300">
+                      {displayName[0]?.toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-white truncate">{displayName}</div>
+                    <div className="text-xs text-zinc-500 truncate">@{username}</div>
+                  </div>
                 </div>
-              </div>
 
-              {username && (
-                <div className="mt-3 flex items-center gap-1">
-                  <code className="flex-1 px-2.5 py-1.5 bg-zinc-900 rounded text-xs text-zinc-500 truncate">
-                    /{username}
-                  </code>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={copyProfileUrl}
-                    className="h-7 w-7 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800"
-                  >
-                    {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                  </Button>
-                  <Link href={`/${username}`} target="_blank">
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800">
-                      <ExternalLink className="h-3.5 w-3.5" />
+                {username && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 px-3 py-2 bg-zinc-900/80 rounded-lg border border-zinc-700/50">
+                      <code className="text-xs text-zinc-400 truncate block">
+                        /{username}
+                      </code>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={copyProfileUrl}
+                      className="h-9 w-9 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg"
+                    >
+                      {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
                     </Button>
-                  </Link>
-                </div>
-              )}
+                    <Link href={`/${username}`} target="_blank">
+                      <Button variant="ghost" size="sm" className="h-9 w-9 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg">
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Nav */}
-            <nav className="flex-1 p-3">
+            {/* Navigation */}
+            <nav className="flex-1 px-3 py-2">
+              <p className="px-3 mb-2 text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Menu</p>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href ||
@@ -178,28 +207,39 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={`
-                      flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors mb-1
+                      group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 mb-1
                       ${isActive
-                        ? 'bg-white text-black font-medium'
+                        ? 'bg-gradient-to-r from-indigo-500/20 to-indigo-600/10 text-white border border-indigo-500/20'
                         : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
                       }
                     `}
                   >
-                    <Icon className="h-4 w-4" />
-                    {item.label}
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                      isActive ? 'bg-indigo-500/20' : 'bg-zinc-800/50 group-hover:bg-zinc-700/50'
+                    }`}>
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-400' : ''}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-medium ${isActive ? 'text-white' : ''}`}>{item.label}</div>
+                    </div>
+                    {isActive && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    )}
                   </Link>
                 );
               })}
             </nav>
 
             {/* Logout */}
-            <div className="p-3 border-t border-zinc-800/50">
+            <div className="p-4 border-t border-zinc-800/50">
               <button
                 onClick={() => logout()}
-                className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
               >
-                <LogOut className="h-4 w-4" />
-                Sign out
+                <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center">
+                  <LogOut className="h-4 w-4" />
+                </div>
+                <span>Sign out</span>
               </button>
             </div>
           </div>
@@ -208,14 +248,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Main */}
+        {/* Main Content */}
         <main className="flex-1 min-h-screen">
-          <div className="max-w-4xl mx-auto p-6 lg:p-8">{children}</div>
+          <div className="max-w-5xl mx-auto p-6 lg:p-10">{children}</div>
         </main>
       </div>
     </div>
