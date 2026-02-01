@@ -32,7 +32,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl w-full overflow-hidden">
       {/* Page Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -178,7 +178,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2">
             <div className="flex-1 min-w-0 px-4 py-3 rounded-xl bg-zinc-800/50 border border-zinc-700/50 overflow-hidden">
               <div className="font-mono text-sm text-white">{truncateAddress(walletAddress)}</div>
-              <div className="text-xs text-zinc-500 mt-0.5 font-mono truncate">{walletAddress}</div>
+              <div className="text-xs text-zinc-500 mt-0.5 font-mono truncate break-all">{walletAddress}</div>
             </div>
             <motion.button
               onClick={() => copyToClipboard(walletAddress, 'wallet')}

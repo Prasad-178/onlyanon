@@ -117,10 +117,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0b] border-r border-zinc-800/80
           transform transition-transform duration-200 lg:translate-x-0 lg:static
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+          lg:top-0 top-14
         `}>
-          <div className="flex flex-col h-full">
-            {/* Logo */}
-            <div className="h-14 flex items-center px-5 border-b border-zinc-800/80">
+          <div className="flex flex-col h-full overflow-y-auto">
+            {/* Logo - hidden on mobile since we have the header */}
+            <div className="h-14 hidden lg:flex items-center px-5 border-b border-zinc-800/80">
               <Link href="/" className="flex items-center gap-2">
                 <Logo className="w-7 h-7" />
                 <span className="font-semibold text-white">OnlyAnon</span>
