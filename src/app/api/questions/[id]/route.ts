@@ -33,7 +33,7 @@ export async function GET(
       );
     }
 
-    // Get question with offering and reply
+    // Get question with offering
     const { data: question, error: questionError } = await supabase
       .from('questions')
       .select(`
@@ -47,10 +47,6 @@ export async function GET(
           id,
           title,
           creator_id
-        ),
-        replies (
-          reply_text,
-          created_at
         )
       `)
       .eq('id', questionId)
@@ -72,7 +68,12 @@ export async function GET(
       );
     }
 
-    const reply = (question.replies as any[])?.[0];
+    // Fetch reply separately to ensure we get it
+    const { data: reply } = await supabase
+      .from('replies')
+      .select('reply_text, created_at')
+      .eq('question_id', questionId)
+      .single();
 
     return NextResponse.json({
       question: {
@@ -83,8 +84,8 @@ export async function GET(
         payment_token: question.payment_token,
         created_at: question.created_at,
         offering_title: offering.title,
-        reply_text: reply?.reply_text,
-        replied_at: reply?.created_at,
+        reply_text: reply?.reply_text || null,
+        replied_at: reply?.created_at || null,
       },
     });
   } catch (error) {

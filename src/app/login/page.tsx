@@ -29,11 +29,13 @@ export default function LoginPage() {
     },
   });
 
+  // Only redirect if already authenticated AND not in the middle of logging in
+  // This prevents racing with the onComplete callback which syncs the creator
   useEffect(() => {
-    if (ready && authenticated && user) {
+    if (ready && authenticated && user && !isLoggingIn) {
       router.push('/dashboard');
     }
-  }, [ready, authenticated, user, router]);
+  }, [ready, authenticated, user, router, isLoggingIn]);
 
   if (!ready) {
     return (

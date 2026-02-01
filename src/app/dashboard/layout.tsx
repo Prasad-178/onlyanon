@@ -68,19 +68,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function doSync() {
+      // Wait until user object is fully available before proceeding
       if (ready && authenticated && user && !hasSynced.current) {
         hasSynced.current = true;
         setIsSyncing(true);
-        const success = await syncCreatorToDb(user);
-        if (!success) {
-          // Retry once after a short delay
-          await new Promise(resolve => setTimeout(resolve, 500));
-          await syncCreatorToDb(user);
+
+        // Retry up to 3 times with exponential backoff
+        let success = false;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          success = await syncCreatorToDb(user);
+          if (success) break;
+          // Wait before retrying: 500ms, 1000ms, 2000ms
+          await new Promise(resolve => setTimeout(resolve, 500 * Math.pow(2, attempt)));
         }
-        setIsSyncing(false);
-      } else if (ready && authenticated) {
+
         setIsSyncing(false);
       }
+      // Only set isSyncing to false when user is available AND sync has completed
+      // This prevents rendering children before user data is ready
     }
     doSync();
   }, [ready, authenticated, user]);
@@ -94,7 +99,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   };
 
-  if (!ready || isSyncing) {
+  // Wait for Privy to be ready, user to be loaded, and sync to complete
+  if (!ready || !user || isSyncing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b]">
         <Loader2 className="h-5 w-5 text-zinc-500 animate-spin" />
