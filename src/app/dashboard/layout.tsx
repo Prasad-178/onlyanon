@@ -1,32 +1,40 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { usePrivy, useLogout } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  MessageSquare,
-  Package,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  ExternalLink,
-  Copy,
-  Check,
-  Sparkles,
-  Loader2,
-  Home,
-} from 'lucide-react';
+import { MessageSquare, Package, Settings, LogOut, Menu, X, Copy, Check, Loader2 } from 'lucide-react';
 import { useState, ReactNode, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
+// Logo component
+function Logo({ className = "w-8 h-8" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" className={className}>
+      <defs>
+        <linearGradient id="dashLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#818cf8" />
+          <stop offset="100%" stopColor="#6366f1" />
+        </linearGradient>
+        <linearGradient id="dashInnerGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#a5b4fc" />
+          <stop offset="100%" stopColor="#c7d2fe" />
+        </linearGradient>
+      </defs>
+      <rect width="40" height="40" rx="10" fill="url(#dashLogoGradient)" />
+      <path d="M20 8C13.373 8 8 13.373 8 20s5.373 12 12 12 12-5.373 12-12S26.627 8 20 8zm0 4c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8z" fill="url(#dashInnerGradient)" opacity="0.9" />
+      <circle cx="20" cy="20" r="4" fill="white" />
+      <path d="M20 16v-4M20 28v-4M16 20h-4M28 20h-4" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+    </svg>
+  );
+}
+
 const navItems = [
-  { href: '/dashboard', label: 'Questions', icon: MessageSquare, description: 'Manage incoming questions' },
-  { href: '/dashboard/offerings', label: 'Offerings', icon: Package, description: 'Your question topics' },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings, description: 'Account preferences' },
+  { href: '/dashboard', label: 'Questions', icon: MessageSquare },
+  { href: '/dashboard/offerings', label: 'Offerings', icon: Package },
+  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 async function syncCreatorToDb(user: any) {
@@ -36,7 +44,6 @@ async function syncCreatorToDb(user: any) {
   ) as { address?: string } | undefined;
 
   if (!twitter) return;
-
   const walletAddress = wallet?.address || user.wallet?.address;
   if (!walletAddress) return;
 
@@ -62,17 +69,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, authenticated, ready } = usePrivy();
-  const { logout } = useLogout({
-    onSuccess: () => router.push('/'),
-  });
+  const { logout } = useLogout({ onSuccess: () => router.push('/') });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const hasSynced = useRef(false);
 
   useEffect(() => {
-    if (ready && !authenticated) {
-      router.push('/login');
-    }
+    if (ready && !authenticated) router.push('/login');
   }, [ready, authenticated, router]);
 
   useEffect(() => {
@@ -86,20 +89,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     if (username) {
       navigator.clipboard.writeText(`${window.location.origin}/${username}`);
       setCopied(true);
-      toast.success('Profile URL copied');
+      toast.success('Copied');
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#09090b]">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
-            <Sparkles className="h-6 w-6 text-white" />
-          </div>
-          <Loader2 className="h-5 w-5 text-indigo-400 animate-spin" />
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b]">
+        <Loader2 className="h-5 w-5 text-zinc-500 animate-spin" />
       </div>
     );
   }
@@ -112,133 +110,99 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const username = twitter?.username || '';
 
   return (
-    <div className="min-h-screen bg-[#09090b]">
+    <div className="min-h-screen bg-[#0a0a0b]">
       {/* Mobile header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 h-16 px-4 flex items-center justify-between bg-[#09090b]/95 backdrop-blur-sm border-b border-zinc-800/50">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 h-14 px-4 flex items-center justify-between bg-[#0a0a0b] border-b border-zinc-800/80">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="w-10 h-10 flex items-center justify-center rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors"
+          className="w-9 h-9 flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
         >
           {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center">
-            <Sparkles className="h-4 w-4 text-white" />
-          </div>
-          <span className="font-semibold text-white text-lg">OnlyAnon</span>
+          <Logo className="w-7 h-7" />
+          <span className="font-semibold text-white">OnlyAnon</span>
         </Link>
-        <div className="w-10" />
+        <div className="w-9" />
       </header>
 
-      <div className="flex lg:pt-0 pt-16">
+      <div className="flex lg:pt-0 pt-14">
         {/* Sidebar */}
-        <aside
-          className={`
-            fixed inset-y-0 left-0 z-50 w-72 bg-gradient-to-b from-zinc-900/95 to-[#09090b] border-r border-zinc-800/50
-            transform transition-transform duration-300 lg:translate-x-0 lg:static
-            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          `}
-        >
+        <aside className={`
+          fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0b] border-r border-zinc-800/80
+          transform transition-transform duration-200 lg:translate-x-0 lg:static
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}>
           <div className="flex flex-col h-full">
             {/* Logo */}
-            <div className="h-16 flex items-center justify-between px-5 border-b border-zinc-800/50">
+            <div className="h-14 flex items-center px-5 border-b border-zinc-800/80">
               <Link href="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                  <Sparkles className="h-4 w-4 text-white" />
-                </div>
-                <span className="font-semibold text-white text-lg tracking-tight">OnlyAnon</span>
-              </Link>
-              <Link href="/" className="text-zinc-500 hover:text-white transition-colors">
-                <Home className="h-4 w-4" />
+                <Logo className="w-7 h-7" />
+                <span className="font-semibold text-white">OnlyAnon</span>
               </Link>
             </div>
 
-            {/* User Profile Card */}
-            <div className="p-4">
-              <div className="rounded-xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50 p-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <Avatar className="h-11 w-11 ring-2 ring-zinc-700">
-                    <AvatarImage src={avatarUrl} alt={displayName} />
-                    <AvatarFallback className="bg-gradient-to-br from-indigo-500/20 to-indigo-600/20 text-indigo-300">
-                      {displayName[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-white truncate">{displayName}</div>
-                    <div className="text-xs text-zinc-500 truncate">@{username}</div>
-                  </div>
+            {/* User */}
+            <div className="p-4 border-b border-zinc-800/80">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={avatarUrl} alt={displayName} />
+                  <AvatarFallback className="bg-zinc-800 text-zinc-400 text-sm">
+                    {displayName[0]?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-white truncate">{displayName}</div>
+                  <div className="text-xs text-zinc-500 truncate">@{username}</div>
                 </div>
-
-                {username && (
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 px-3 py-2 bg-zinc-900/80 rounded-lg border border-zinc-700/50">
-                      <code className="text-xs text-zinc-400 truncate block">
-                        /{username}
-                      </code>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={copyProfileUrl}
-                      className="h-9 w-9 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg"
-                    >
-                      {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
-                    </Button>
-                    <Link href={`/${username}`} target="_blank">
-                      <Button variant="ghost" size="sm" className="h-9 w-9 p-0 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-lg">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                )}
               </div>
+              {username && (
+                <button
+                  onClick={copyProfileUrl}
+                  className="mt-3 w-full flex items-center justify-between px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-colors group"
+                >
+                  <code className="text-xs text-zinc-500 group-hover:text-zinc-400">/{username}</code>
+                  {copied ? (
+                    <Check className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5 text-zinc-600 group-hover:text-zinc-400" />
+                  )}
+                </button>
+              )}
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-3 py-2">
-              <p className="px-3 mb-2 text-[10px] text-zinc-600 uppercase tracking-wider font-medium">Menu</p>
+            <nav className="flex-1 p-3">
               {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname === item.href ||
-                  (item.href !== '/dashboard' && pathname.startsWith(item.href));
+                const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={() => setSidebarOpen(false)}
                     className={`
-                      group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 mb-1
+                      flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors mb-1
                       ${isActive
-                        ? 'bg-gradient-to-r from-indigo-500/20 to-indigo-600/10 text-white border border-indigo-500/20'
+                        ? 'bg-zinc-800/80 text-white'
                         : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
                       }
                     `}
                   >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                      isActive ? 'bg-indigo-500/20' : 'bg-zinc-800/50 group-hover:bg-zinc-700/50'
-                    }`}>
-                      <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-400' : ''}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className={`font-medium ${isActive ? 'text-white' : ''}`}>{item.label}</div>
-                    </div>
-                    {isActive && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                    )}
+                    <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-400' : ''}`} />
+                    <span className="font-medium">{item.label}</span>
                   </Link>
                 );
               })}
             </nav>
 
             {/* Logout */}
-            <div className="p-4 border-t border-zinc-800/50">
+            <div className="p-3 border-t border-zinc-800/80">
               <button
                 onClick={() => logout()}
-                className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-all duration-200"
+                className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sm text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-colors"
               >
-                <div className="w-8 h-8 rounded-lg bg-zinc-800/50 flex items-center justify-center">
-                  <LogOut className="h-4 w-4" />
-                </div>
+                <LogOut className="h-4 w-4" />
                 <span>Sign out</span>
               </button>
             </div>
@@ -247,15 +211,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* Overlay */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
         )}
 
         {/* Main Content */}
         <main className="flex-1 min-h-screen">
-          <div className="max-w-5xl mx-auto p-6 lg:p-10">{children}</div>
+          <div className="max-w-4xl mx-auto px-6 py-8 lg:py-12">{children}</div>
         </main>
       </div>
     </div>

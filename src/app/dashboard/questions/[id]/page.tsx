@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { usePrivy } from '@privy-io/react-auth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Clock, CheckCircle, Send, MessageSquare, Loader2, DollarSign, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Question {
@@ -24,6 +24,7 @@ interface Question {
 
 export default function QuestionDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const { user } = usePrivy();
   const queryClient = useQueryClient();
 
@@ -46,23 +47,18 @@ export default function QuestionDetailPage() {
       const res = await fetch(`/api/questions/${questionId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          privy_did: user?.id,
-          reply_text: replyText.trim(),
-        }),
+        body: JSON.stringify({ privy_did: user?.id, reply_text: replyText.trim() }),
       });
-
       if (!res.ok) {
         const error = await res.json();
         throw new Error(error.error || 'Failed to submit reply');
       }
-
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['question', questionId] });
       queryClient.invalidateQueries({ queryKey: ['questions'] });
-      toast.success('Reply sent successfully');
+      toast.success('Reply sent');
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -72,7 +68,7 @@ export default function QuestionDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 text-indigo-400 animate-spin" />
+        <Loader2 className="h-5 w-5 text-zinc-500 animate-spin" />
       </div>
     );
   }
@@ -80,15 +76,11 @@ export default function QuestionDetailPage() {
   if (!question) {
     return (
       <div className="text-center py-20">
-        <div className="w-16 h-16 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-5">
-          <AlertCircle className="h-7 w-7 text-zinc-600" />
-        </div>
-        <h3 className="text-xl font-semibold text-white mb-2">Question not found</h3>
-        <p className="text-zinc-500 mb-6">This question may have been deleted or doesn't exist.</p>
+        <p className="text-zinc-500 text-sm mb-4">Question not found</p>
         <Link href="/dashboard">
-          <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-800 h-11 px-6 rounded-xl">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
+          <Button variant="outline" className="h-9 text-sm border-zinc-800 text-zinc-400 hover:text-white">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
           </Button>
         </Link>
       </div>
@@ -97,118 +89,85 @@ export default function QuestionDetailPage() {
 
   const isReplied = question.status === 'replied';
 
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   return (
     <div className="max-w-2xl space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/dashboard">
-          <Button variant="ghost" size="sm" className="h-10 w-10 p-0 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
+          <button className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-white">Question Details</h1>
-          <p className="text-sm text-zinc-500">{question.offering_title}</p>
-        </div>
-        {isReplied ? (
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <CheckCircle className="h-4 w-4" />
-            Replied
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <Clock className="h-4 w-4" />
-            Pending
-          </span>
-        )}
-      </div>
-
-      {/* Meta Info */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-          <DollarSign className="h-4 w-4 text-indigo-400" />
-          <span className="text-sm text-indigo-300 font-medium">{question.payment_amount} {question.payment_token}</span>
-        </div>
-        <span className="text-sm text-zinc-500">
-          {new Date(question.created_at).toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
-        </span>
-      </div>
-
-      {/* Question Card */}
-      <div className="rounded-xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50 p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
-            <MessageSquare className="h-4 w-4 text-zinc-400" />
+          <h1 className="text-lg font-semibold text-white">Question</h1>
+          <div className="flex items-center gap-2 mt-0.5 text-xs text-zinc-500">
+            <span>{question.offering_title}</span>
+            <span>·</span>
+            <span>{question.payment_amount} {question.payment_token}</span>
+            <span>·</span>
+            <span>{formatDate(question.created_at)}</span>
           </div>
-          <span className="text-sm text-zinc-400 font-medium">Question</span>
         </div>
-        <p className="text-base text-white leading-relaxed whitespace-pre-wrap">{question.question_text}</p>
+        <div className={`px-2 py-1 rounded text-xs font-medium ${
+          isReplied ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'
+        }`}>
+          {isReplied ? 'Replied' : 'Pending'}
+        </div>
+      </div>
+
+      {/* Question */}
+      <div className="p-5 rounded-lg bg-zinc-900 border border-zinc-800">
+        <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{question.question_text}</p>
       </div>
 
       {/* Reply Section */}
       {isReplied ? (
-        <div className="rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                <CheckCircle className="h-4 w-4 text-emerald-400" />
-              </div>
-              <span className="text-sm text-emerald-400 font-medium">Your Reply</span>
-            </div>
+        <div className="p-5 rounded-lg bg-zinc-900 border border-emerald-500/20">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs text-emerald-400 font-medium">Your Reply</span>
             {question.replied_at && (
-              <span className="text-xs text-emerald-400/60">
-                {new Date(question.replied_at).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </span>
+              <span className="text-xs text-zinc-600">{formatDate(question.replied_at)}</span>
             )}
           </div>
-          <p className="text-base text-white leading-relaxed whitespace-pre-wrap">{question.reply_text}</p>
+          <p className="text-sm text-white leading-relaxed whitespace-pre-wrap">{question.reply_text}</p>
         </div>
       ) : (
-        <div className="rounded-xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center">
-              <Send className="h-4 w-4 text-indigo-400" />
-            </div>
-            <span className="text-sm text-zinc-400 font-medium">Write Your Reply</span>
+        <div className="p-5 rounded-lg bg-zinc-900 border border-zinc-800">
+          <div className="mb-3">
+            <span className="text-xs text-zinc-500 font-medium">Write your reply</span>
           </div>
-
           <Textarea
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            placeholder="Write a thoughtful response to this question..."
-            className="bg-zinc-900/80 border-zinc-700 text-white text-base placeholder:text-zinc-600 min-h-[180px] mb-4 focus:border-indigo-500 focus:ring-indigo-500/20 rounded-xl resize-none"
+            placeholder="Type your response..."
+            className="bg-zinc-800/50 border-zinc-700 text-white text-sm placeholder:text-zinc-600 min-h-[150px] focus:border-zinc-600 focus:ring-0 resize-none rounded-lg"
             maxLength={2000}
             disabled={replyMutation.isPending}
           />
-
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-zinc-600">{replyText.length}/2000 characters</span>
+          <div className="flex items-center justify-between mt-4">
+            <span className="text-xs text-zinc-600">{replyText.length}/2000</span>
             <Button
               onClick={() => replyMutation.mutate()}
               disabled={replyMutation.isPending || !replyText.trim()}
-              className="h-11 px-6 text-sm font-medium rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/20 disabled:opacity-50"
+              className="h-9 px-4 text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-50"
             >
               {replyMutation.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Sending...
-                </span>
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <span className="flex items-center gap-2">
-                  <Send className="h-4 w-4" />
-                  Send Reply
-                </span>
+                <>
+                  <Send className="h-4 w-4 mr-1.5" />
+                  Send
+                </>
               )}
             </Button>
           </div>

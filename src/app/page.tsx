@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
 import { Button } from '@/components/ui/button';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 import {
   MessageSquare,
   Shield,
@@ -13,22 +13,46 @@ import {
   Zap,
   Lock,
   Globe,
-  Sparkles,
   Check,
   ChevronRight,
   ChevronDown,
-  Eye,
   EyeOff,
-  Users,
   DollarSign,
   Clock,
-  Star,
-  Twitter,
-  ArrowUpRight,
   Fingerprint,
-  Cpu,
-  CircuitBoard,
 } from 'lucide-react';
+
+// Custom Logo Component
+function Logo({ className = "w-10 h-10" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" className={className}>
+      <defs>
+        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#818cf8" />
+          <stop offset="100%" stopColor="#6366f1" />
+        </linearGradient>
+        <linearGradient id="innerGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#a5b4fc" />
+          <stop offset="100%" stopColor="#c7d2fe" />
+        </linearGradient>
+      </defs>
+      <rect width="40" height="40" rx="10" fill="url(#logoGradient)" />
+      <path
+        d="M20 8C13.373 8 8 13.373 8 20s5.373 12 12 12 12-5.373 12-12S26.627 8 20 8zm0 4c4.418 0 8 3.582 8 8s-3.582 8-8 8-8-3.582-8-8 3.582-8 8-8z"
+        fill="url(#innerGradient)"
+        opacity="0.9"
+      />
+      <circle cx="20" cy="20" r="4" fill="white" />
+      <path
+        d="M20 16v-4M20 28v-4M16 20h-4M28 20h-4"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+    </svg>
+  );
+}
 
 // Animation variants
 const fadeInUp = {
@@ -36,18 +60,8 @@ const fadeInUp = {
   visible: { opacity: 1, y: 0 }
 };
 
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 }
-};
-
 const stagger = {
   visible: { transition: { staggerChildren: 0.1 } }
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1 }
 };
 
 // Animated section wrapper
@@ -89,40 +103,229 @@ function FloatingOrb({ className, delay = 0 }: { className: string; delay?: numb
   );
 }
 
-// FAQ Item
-function FAQItem({ question, answer, isOpen, onClick }: { question: string; answer: string; isOpen: boolean; onClick: () => void }) {
+
+// Animated Flow Diagram with real question example
+function AnimatedFlowDiagram() {
+  const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % 3);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <motion.div
-      className="border-b border-zinc-800/50 last:border-0"
-      initial={false}
-    >
-      <button
-        onClick={onClick}
-        className="w-full py-6 flex items-center justify-between text-left group"
-      >
-        <span className="text-lg font-medium text-white group-hover:text-indigo-300 transition-colors">{question}</span>
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDown className="h-5 w-5 text-zinc-500" />
-        </motion.div>
-      </button>
+    <div className="relative">
+      {/* Glow effect */}
       <motion.div
-        initial={false}
-        animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-        className="overflow-hidden"
-      >
-        <p className="pb-6 text-zinc-400 leading-relaxed">{answer}</p>
-      </motion.div>
-    </motion.div>
+        className="absolute -inset-4 rounded-3xl"
+        animate={{
+          background: [
+            'radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%)',
+            'radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%)',
+            'radial-gradient(circle at 30% 70%, rgba(99, 102, 241, 0.15) 0%, transparent 50%)',
+          ]
+        }}
+        transition={{ duration: 4, repeat: Infinity }}
+      />
+
+      <div className="relative rounded-2xl bg-zinc-900/80 border border-zinc-700/50 p-6 backdrop-blur-sm overflow-hidden">
+        {/* Animated background particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-indigo-400/30 rounded-full"
+              initial={{ x: `${Math.random() * 100}%`, y: '100%' }}
+              animate={{
+                y: ['-10%'],
+                opacity: [0, 0.8, 0]
+              }}
+              transition={{
+                duration: 4,
+                delay: i * 0.6,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="relative space-y-4">
+          {/* Question being sent */}
+          <div className="mb-4 p-3 rounded-lg bg-zinc-800/60 border border-zinc-700/40">
+            <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Question</p>
+            <p className="text-sm text-zinc-300">"What's your honest opinion on ETH vs SOL long term?"</p>
+            <div className="flex items-center gap-3 mt-2 text-xs text-zinc-500">
+              <span className="text-indigo-400 font-medium">5 SOL</span>
+              <span>•</span>
+              <span>to @aeyakovenko</span>
+            </div>
+          </div>
+
+          {/* Step 1: Your Wallet */}
+          <motion.div
+            className="flex items-center gap-3 p-3 rounded-xl bg-zinc-800/40 border border-zinc-700/30"
+            animate={{
+              opacity: activeStep === 0 ? 1 : 0.5,
+              borderColor: activeStep === 0 ? '#6366f1' : 'rgba(63, 63, 70, 0.3)'
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="w-10 h-10 rounded-lg bg-zinc-700/50 flex items-center justify-center shrink-0">
+              <Wallet className="h-5 w-5 text-zinc-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white">Your Wallet</p>
+              <p className="text-xs font-mono text-zinc-500 truncate">8xK3nPq...mN9qW2</p>
+            </div>
+            <AnimatePresence mode="wait">
+              {activeStep === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="px-2 py-1 rounded-md bg-indigo-500/20 text-indigo-300 text-[10px] font-medium"
+                >
+                  Sending...
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Arrow with data ball */}
+          <div className="flex justify-center">
+            <div className="relative h-8 w-px bg-gradient-to-b from-zinc-700 to-zinc-700">
+              <motion.div
+                className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/50"
+                animate={{
+                  y: activeStep === 0 ? [0, 32] : -4,
+                  opacity: activeStep === 0 ? [1, 0] : 0
+                }}
+                transition={{ duration: 0.6, ease: "easeIn" }}
+              />
+            </div>
+          </div>
+
+          {/* Step 2: ShadowWire */}
+          <motion.div
+            className="p-4 rounded-xl border relative overflow-hidden"
+            animate={{
+              borderColor: activeStep === 1 ? '#6366f1' : 'rgba(99, 102, 241, 0.2)',
+              background: activeStep === 1
+                ? 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)'
+                : 'linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%)'
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Scanning lines animation */}
+            {activeStep === 1 && (
+              <motion.div className="absolute inset-0 overflow-hidden">
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute h-full w-px bg-gradient-to-b from-transparent via-indigo-400/40 to-transparent"
+                    style={{ left: `${20 + i * 30}%` }}
+                    animate={{ y: ['-100%', '200%'] }}
+                    transition={{ duration: 1.2, delay: i * 0.15, repeat: Infinity }}
+                  />
+                ))}
+              </motion.div>
+            )}
+            <div className="relative flex items-center gap-3">
+              <motion.div
+                className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shrink-0"
+                animate={activeStep === 1 ? {
+                  boxShadow: ['0 8px 30px -8px rgba(99, 102, 241, 0.3)', '0 8px 30px -8px rgba(99, 102, 241, 0.6)', '0 8px 30px -8px rgba(99, 102, 241, 0.3)']
+                } : {}}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Fingerprint className="h-6 w-6 text-white" />
+              </motion.div>
+              <div>
+                <p className="text-sm font-semibold text-white">ShadowWire Protocol</p>
+                <motion.p
+                  className="text-xs"
+                  animate={{ color: activeStep === 1 ? '#a5b4fc' : '#6366f1' }}
+                >
+                  {activeStep === 1 ? 'Anonymizing transaction...' : 'Zero-knowledge proof layer'}
+                </motion.p>
+              </div>
+            </div>
+            {/* Processing indicator */}
+            <AnimatePresence>
+              {activeStep === 1 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-3 pt-3 border-t border-indigo-500/20"
+                >
+                  <div className="flex items-center gap-2 text-xs text-indigo-300">
+                    <motion.div
+                      className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    />
+                    <span>Generating ZK proof • Mixing transaction</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Arrow with data ball */}
+          <div className="flex justify-center">
+            <div className="relative h-8 w-px bg-gradient-to-b from-zinc-700 to-zinc-700">
+              <motion.div
+                className="absolute left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50"
+                animate={{
+                  y: activeStep === 2 ? [0, 32] : -4,
+                  opacity: activeStep === 2 ? [1, 0] : 0
+                }}
+                transition={{ duration: 0.6, ease: "easeIn" }}
+              />
+            </div>
+          </div>
+
+          {/* Step 3: Creator Receives */}
+          <motion.div
+            className="flex items-center gap-3 p-3 rounded-xl bg-zinc-800/40 border border-zinc-700/30"
+            animate={{
+              opacity: activeStep === 2 ? 1 : 0.5,
+              borderColor: activeStep === 2 ? '#10b981' : 'rgba(63, 63, 70, 0.3)'
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+              T
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white">toly receives</p>
+              <p className="text-xs text-zinc-500">Sender: <span className="text-emerald-400 font-mono">Anonymous</span></p>
+            </div>
+            <AnimatePresence mode="wait">
+              {activeStep === 2 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="px-2 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-medium flex items-center gap-1"
+                >
+                  <Check className="h-3 w-3" /> Delivered
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function Home() {
   const { authenticated, ready } = usePrivy();
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -132,87 +335,44 @@ export default function Home() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
 
-  const faqs = [
-    {
-      question: "How does the anonymity work?",
-      answer: "When you pay to ask a question, your payment goes through ShadowWire - a zero-knowledge proof system on Solana. The creator receives the payment, but the transaction is routed in a way that makes it impossible to trace back to your wallet. Your identity stays completely private."
-    },
-    {
-      question: "What wallets are supported?",
-      answer: "Any Solana wallet works - Phantom, Solflare, Backpack, Ledger, and more. Just connect your wallet, pay the creator's fee, and ask your question. No account creation required."
-    },
-    {
-      question: "How do I check if a creator replied?",
-      answer: "When you submit a question, you get a unique access code. Save this code! It's your only way to check for replies. Visit the 'Check Reply' page, enter your code, and see if there's a response waiting for you."
-    },
-    {
-      question: "What cut does OnlyAnon take?",
-      answer: "Creators keep 95% of every payment. The remaining 5% covers network fees and platform maintenance. No hidden fees, no monthly subscriptions."
-    },
-    {
-      question: "Can creators see my wallet address?",
-      answer: "No. That's the whole point. ShadowWire technology ensures your wallet address is never revealed to the creator. They see the payment amount and your question - nothing else."
-    },
-  ];
-
   return (
     <div className="min-h-screen bg-[#09090b] overflow-hidden">
       {/* Grid background */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.02]">
+      <div className="fixed inset-0 pointer-events-none opacity-[0.015]">
         <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)`,
-          backgroundSize: '60px 60px'
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px'
         }} />
       </div>
 
       {/* Floating gradient orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <FloatingOrb
-          className="absolute -top-40 left-1/4 w-[800px] h-[800px] bg-indigo-500/[0.07] rounded-full blur-[150px]"
-          delay={0}
-        />
-        <FloatingOrb
-          className="absolute top-1/4 -right-40 w-[600px] h-[600px] bg-purple-500/[0.05] rounded-full blur-[120px]"
-          delay={2}
-        />
-        <FloatingOrb
-          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600/[0.04] rounded-full blur-[100px]"
-          delay={4}
-        />
-        <FloatingOrb
-          className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-violet-500/[0.03] rounded-full blur-[80px]"
-          delay={1}
-        />
+        <FloatingOrb className="absolute -top-40 left-1/4 w-[800px] h-[800px] bg-indigo-500/[0.07] rounded-full blur-[150px]" delay={0} />
+        <FloatingOrb className="absolute top-1/4 -right-40 w-[600px] h-[600px] bg-purple-500/[0.05] rounded-full blur-[120px]" delay={2} />
+        <FloatingOrb className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600/[0.04] rounded-full blur-[100px]" delay={4} />
       </div>
 
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#09090b]/80 backdrop-blur-xl">
         <motion.div
           className="mx-auto max-w-7xl px-6"
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <div className="flex items-center justify-between h-20 border-b border-white/[0.05]">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:shadow-indigo-500/40 transition-shadow duration-300">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold text-white text-xl tracking-tight">OnlyAnon</span>
+          <div className="flex items-center justify-between h-16">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <Logo className="w-9 h-9" />
+              <span className="font-bold text-white text-lg tracking-tight">OnlyAnon</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
               {[
-                { href: '/creators', label: 'Explore Creators' },
+                { href: '/creators', label: 'Explore' },
                 { href: '#how-it-works', label: 'How it works' },
-                { href: '#features', label: 'Features' },
                 { href: '/check', label: 'Check Reply' },
               ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/5"
-                >
+                <Link key={item.href} href={item.href} className="px-4 py-2 text-sm text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5">
                   {item.label}
                 </Link>
               ))}
@@ -221,22 +381,18 @@ export default function Home() {
             <div className="flex items-center gap-3">
               {ready && authenticated ? (
                 <Link href="/dashboard">
-                  <Button className="bg-white text-zinc-900 hover:bg-zinc-100 h-10 px-5 text-sm font-medium rounded-xl shadow-lg shadow-white/10 transition-all duration-200 hover:shadow-xl hover:shadow-white/20">
-                    Dashboard
-                    <ChevronRight className="ml-1 h-4 w-4" />
+                  <Button className="bg-white text-zinc-900 hover:bg-zinc-100 h-9 px-4 text-sm font-medium rounded-lg">
+                    Dashboard <ChevronRight className="ml-1 h-4 w-4" />
                   </Button>
                 </Link>
               ) : (
                 <>
                   <Link href="/login" className="hidden sm:block">
-                    <Button variant="ghost" className="text-zinc-400 hover:text-white h-10 px-4 text-sm">
-                      Sign In
-                    </Button>
+                    <Button variant="ghost" className="text-zinc-400 hover:text-white h-9 px-4 text-sm">Sign In</Button>
                   </Link>
                   <Link href="/login">
-                    <Button className="bg-white text-zinc-900 hover:bg-zinc-100 h-10 px-5 text-sm font-medium rounded-xl shadow-lg shadow-white/10 transition-all duration-200 hover:shadow-xl hover:shadow-white/20">
-                      Get Started
-                      <ArrowRight className="ml-1 h-4 w-4" />
+                    <Button className="bg-white text-zinc-900 hover:bg-zinc-100 h-9 px-4 text-sm font-medium rounded-lg">
+                      Get Started <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
                   </Link>
                 </>
@@ -248,102 +404,56 @@ export default function Home() {
 
       <main className="relative z-10">
         {/* Hero Section */}
-        <section ref={heroRef} className="relative min-h-screen flex items-center pt-20">
-          <motion.div
-            className="w-full px-6 py-20 md:py-32"
-            style={{ opacity: heroOpacity, y: heroY }}
-          >
+        <section ref={heroRef} className="relative pt-24 pb-20 md:pt-32 md:pb-32">
+          <motion.div className="px-6" style={{ opacity: heroOpacity, y: heroY }}>
             <div className="max-w-7xl mx-auto">
-              <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                 {/* Left: Content */}
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  variants={stagger}
-                >
-                  {/* Badge */}
-                  <motion.div
-                    variants={fadeInUp}
-                    transition={{ duration: 0.6 }}
-                    className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 mb-8"
-                  >
+                <motion.div initial="hidden" animate="visible" variants={stagger}>
+                  <motion.div variants={fadeInUp} transition={{ duration: 0.6 }} className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
                     </span>
-                    <span className="text-sm text-indigo-300 font-medium">Powered by Solana &amp; ShadowWire</span>
+                    <span className="text-sm text-indigo-300 font-medium">Powered by ShadowWire</span>
                   </motion.div>
 
-                  {/* Headline */}
-                  <motion.h1
-                    variants={fadeInUp}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                    className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1] tracking-tight mb-8"
-                  >
+                  <motion.h1 variants={fadeInUp} transition={{ duration: 0.6, delay: 0.1 }} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.05] tracking-tight mb-6">
                     Get paid for{' '}
                     <span className="relative inline-block">
-                      <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">
-                        anonymous
-                      </span>
-                      <motion.span
-                        className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full"
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 0.8, delay: 0.8 }}
-                      />
+                      <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">anonymous</span>
+                      <motion.span className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 0.8, delay: 0.8 }} />
                     </span>{' '}
                     questions
                   </motion.h1>
 
-                  {/* Subheadline */}
-                  <motion.p
-                    variants={fadeInUp}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="text-xl text-zinc-400 leading-relaxed mb-10 max-w-lg"
-                  >
-                    Creators set their price. Fans pay to ask anything.
-                    <span className="text-zinc-300"> Zero wallet tracking through ZK proofs.</span>
+                  <motion.p variants={fadeInUp} transition={{ duration: 0.6, delay: 0.2 }} className="text-lg sm:text-xl text-zinc-400 leading-relaxed mb-8 max-w-lg">
+                    Creators set their price. Fans pay to ask anything. <span className="text-zinc-300">Wallet addresses hidden through ZK proofs.</span>
                   </motion.p>
 
-                  {/* CTA Buttons */}
-                  <motion.div
-                    variants={fadeInUp}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                    className="flex flex-col sm:flex-row gap-4 mb-10"
-                  >
+                  <motion.div variants={fadeInUp} transition={{ duration: 0.6, delay: 0.3 }} className="flex flex-col sm:flex-row gap-3 mb-8">
                     {ready && authenticated ? (
                       <Link href="/dashboard">
-                        <Button className="h-14 px-8 text-base font-medium rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-xl shadow-indigo-500/25 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-0.5 group">
-                          Go to Dashboard
-                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        <Button className="h-12 px-6 text-base font-medium rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 group">
+                          Go to Dashboard <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-0.5 transition-transform" />
                         </Button>
                       </Link>
                     ) : (
                       <Link href="/login">
-                        <Button className="h-14 px-8 text-base font-medium rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-xl shadow-indigo-500/25 transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/30 hover:-translate-y-0.5 group">
-                          Start as Creator
-                          <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                        <Button className="h-12 px-6 text-base font-medium rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 group">
+                          Start as Creator <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-0.5 transition-transform" />
                         </Button>
                       </Link>
                     )}
                     <Link href="/creators">
-                      <Button variant="outline" className="h-14 px-8 text-base font-medium rounded-2xl border-2 border-zinc-700 text-zinc-300 hover:text-white hover:bg-white/5 hover:border-zinc-500 transition-all duration-300">
+                      <Button variant="outline" className="h-12 px-6 text-base font-medium rounded-xl border-zinc-700 text-zinc-300 hover:text-white hover:bg-white/5 hover:border-zinc-600">
                         Browse Creators
                       </Button>
                     </Link>
                   </motion.div>
 
-                  {/* Trust Indicators */}
-                  <motion.div
-                    variants={fadeInUp}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-zinc-500"
-                  >
-                    {[
-                      'No account to ask',
-                      'Instant payments',
-                      'Zero tracking',
-                    ].map((item, i) => (
+                  <motion.div variants={fadeInUp} transition={{ duration: 0.6, delay: 0.4 }} className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-zinc-500">
+                    {['No account to ask', 'Instant payments', 'Zero tracking'].map((item, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-emerald-500" />
                         <span>{item}</span>
@@ -352,64 +462,53 @@ export default function Home() {
                   </motion.div>
                 </motion.div>
 
-                {/* Right: Interactive Demo */}
-                <motion.div
-                  initial={{ opacity: 0, x: 40 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
-                  className="relative hidden lg:block"
-                >
-                  {/* Glow effect */}
-                  <div className="absolute -inset-8 bg-gradient-to-r from-indigo-500/20 via-purple-500/10 to-indigo-500/20 rounded-3xl blur-3xl" />
+                {/* Right: Demo Card - Creator Profile */}
+                <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="relative">
+                  <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/10 to-indigo-500/20 rounded-3xl blur-2xl" />
+                  <div className="relative rounded-2xl bg-zinc-900/90 border border-zinc-700/50 overflow-hidden backdrop-blur-xl">
+                    {/* Profile Header Banner */}
+                    <div className="relative h-20 bg-gradient-to-r from-[#9945FF] to-[#14F195]">
+                      <div className="absolute inset-0 bg-black/10" />
+                    </div>
 
-                  {/* Main card */}
-                  <div className="relative rounded-2xl bg-gradient-to-b from-zinc-800/80 to-zinc-900/80 border border-zinc-700/50 p-8 backdrop-blur-xl">
-                    {/* Mock question interface */}
-                    <div className="mb-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-pink-500" />
-                        <div>
-                          <p className="font-semibold text-white">@cryptoexpert</p>
-                          <p className="text-sm text-zinc-500">5 SOL per question</p>
+                    {/* Profile Content */}
+                    <div className="px-5 pb-5">
+                      {/* Avatar */}
+                      <div className="-mt-10 mb-3">
+                        <div className="w-20 h-20 rounded-full border-4 border-zinc-900 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                          T
                         </div>
                       </div>
 
-                      <div className="rounded-xl bg-zinc-900/80 border border-zinc-700/50 p-4 mb-4">
-                        <p className="text-zinc-400 text-sm mb-2">Your question</p>
-                        <p className="text-white">What's your take on the next Solana catalyst? Any alpha you can share?</p>
+                      {/* Name and Handle */}
+                      <div className="mb-3">
+                        <p className="font-bold text-white text-lg flex items-center gap-2">
+                          toly
+                          <svg className="h-5 w-5 text-[#1D9BF0]" viewBox="0 0 22 22" fill="currentColor"><path d="M20.396 11c-.018-.646-.215-1.275-.57-1.816-.354-.54-.852-.972-1.438-1.246.223-.607.27-1.264.14-1.897-.131-.634-.437-1.218-.882-1.687-.47-.445-1.053-.75-1.687-.882-.633-.13-1.29-.083-1.897.14-.273-.587-.704-1.086-1.245-1.44S11.647 1.62 11 1.604c-.646.017-1.273.213-1.813.568s-.969.854-1.24 1.44c-.608-.223-1.267-.272-1.902-.14-.635.13-1.22.436-1.69.882-.445.47-.749 1.055-.878 1.688-.13.633-.08 1.29.144 1.896-.587.274-1.087.705-1.443 1.245-.356.54-.555 1.17-.574 1.817.02.647.218 1.276.574 1.817.356.54.856.972 1.443 1.245-.224.606-.274 1.263-.144 1.896.13.634.433 1.218.877 1.688.47.443 1.054.747 1.687.878.633.132 1.29.084 1.897-.136.274.586.705 1.084 1.246 1.439.54.354 1.17.551 1.816.569.647-.016 1.276-.213 1.817-.567s.972-.854 1.245-1.44c.604.239 1.266.296 1.903.164.636-.132 1.22-.447 1.68-.907.46-.46.776-1.044.908-1.681s.075-1.299-.165-1.903c.586-.274 1.084-.705 1.439-1.246.354-.54.551-1.17.569-1.816zM9.662 14.85l-3.429-3.428 1.293-1.302 2.072 2.072 4.4-4.794 1.347 1.246z"/></svg>
+                        </p>
+                        <p className="text-sm text-zinc-500">@aeyakovenko</p>
                       </div>
 
-                      <motion.div
-                        className="flex items-center gap-2 text-sm"
-                        animate={{ opacity: [0.5, 1, 0.5] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        <Lock className="h-4 w-4 text-indigo-400" />
-                        <span className="text-indigo-300">Your wallet will be hidden</span>
+                      <p className="text-zinc-400 text-sm mb-4">Co-founder of Solana. Building the fastest blockchain.</p>
+
+                      {/* Offering Card */}
+                      <div className="rounded-xl bg-zinc-800/60 border border-zinc-700/50 p-4 mb-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs text-zinc-500 font-medium uppercase tracking-wide">Ask Me Anything</span>
+                          <span className="text-sm font-bold text-white">5 SOL</span>
+                        </div>
+                        <p className="text-zinc-300 text-sm">Questions about Solana, crypto, building, life advice...</p>
+                      </div>
+
+                      <motion.div className="flex items-center gap-2 text-xs" animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }}>
+                        <Lock className="h-3.5 w-3.5 text-indigo-400" />
+                        <span className="text-indigo-300">Your wallet will be hidden from toly</span>
                       </motion.div>
                     </div>
 
-                    {/* Access code preview */}
-                    <div className="rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 p-6 text-center">
-                      <p className="text-xs text-zinc-500 uppercase tracking-widest mb-3">Your Access Code</p>
-                      <motion.p
-                        className="text-2xl font-mono text-white tracking-[0.15em] font-medium"
-                        animate={{ opacity: [1, 0.7, 1] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      >
-                        XKCD-M4NK-9P2Q
-                      </motion.p>
-                    </div>
-
-                    {/* Floating badges */}
-                    <motion.div
-                      className="absolute -top-4 -right-4 px-3 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-medium"
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <Shield className="h-3 w-3" />
-                        100% Private
+                    <motion.div className="absolute top-2 right-2 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[11px] font-medium" animate={{ y: [0, -3, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                      <span className="flex items-center gap-1">
+                        <Shield className="h-3 w-3" /> Anonymous
                       </span>
                     </motion.div>
                   </div>
@@ -418,494 +517,349 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Scroll indicator */}
-          <motion.div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
+          {/* Scroll indicator at bottom of hero */}
+          <motion.div className="flex justify-center mt-16 md:mt-24" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             <ChevronDown className="h-6 w-6 text-zinc-600" />
           </motion.div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-20 px-6 border-t border-zinc-800/50">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { value: '10K+', label: 'Questions Asked', icon: MessageSquare },
-                { value: '500+', label: 'Active Creators', icon: Users },
-                { value: '$50K+', label: 'Creator Earnings', icon: DollarSign },
-                { value: '100%', label: 'Anonymous', icon: EyeOff },
-              ].map((stat, i) => (
-                <AnimatedSection key={i} delay={i * 0.1}>
-                  <div className="text-center">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-4">
-                      <stat.icon className="h-5 w-5 text-indigo-400" />
-                    </div>
-                    <p className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.value}</p>
-                    <p className="text-sm text-zinc-500">{stat.label}</p>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works */}
-        <section id="how-it-works" className="py-24 md:py-32 px-6 border-t border-zinc-800/50">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16 md:mb-20">
-              <p className="text-sm text-indigo-400 font-medium mb-4 uppercase tracking-wider">Simple Process</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">How it works</h2>
-              <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Three simple steps to ask anything, completely anonymously</p>
+        {/* How It Works - Horizontal Timeline */}
+        <section id="how-it-works" className="py-24 md:py-32 px-6">
+          <div className="max-w-5xl mx-auto">
+            <AnimatedSection className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-4">How it works</h2>
+              <p className="text-zinc-500 max-w-lg mx-auto">Three steps to complete anonymity</p>
             </AnimatedSection>
 
-            <div className="grid md:grid-cols-3 gap-8 md:gap-6">
-              {[
-                {
-                  step: '01',
-                  icon: MessageSquare,
-                  title: 'Find & Ask',
-                  description: 'Browse creators. Pick a topic. Write your question. No signup, no email, no friction.',
-                  gradient: 'from-blue-500 to-indigo-500',
-                },
-                {
-                  step: '02',
-                  icon: Wallet,
-                  title: 'Pay Anonymously',
-                  description: 'Connect your Solana wallet. Pay the fee. ShadowWire hides your wallet automatically.',
-                  gradient: 'from-indigo-500 to-purple-500',
-                },
-                {
-                  step: '03',
-                  icon: Lock,
-                  title: 'Save Your Code',
-                  description: 'Get a unique access code. Use it anytime to check if the creator replied to you.',
-                  gradient: 'from-purple-500 to-pink-500',
-                },
-              ].map((item, index) => (
-                <AnimatedSection key={item.step} delay={index * 0.15}>
-                  <div className="group relative h-full">
-                    {/* Connection line */}
-                    {index < 2 && (
-                      <div className="hidden md:block absolute top-24 left-[calc(100%)] w-full h-px">
-                        <div className="w-[calc(100%-48px)] h-px bg-gradient-to-r from-zinc-700 via-zinc-600 to-transparent mx-auto" />
-                      </div>
-                    )}
+            {/* Timeline */}
+            <div className="relative">
+              {/* Connection line */}
+              <div className="hidden md:block absolute top-8 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700 to-transparent" />
 
-                    <div className="relative rounded-2xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-800/50 p-8 h-full transition-all duration-500 group-hover:border-zinc-700/80 group-hover:bg-zinc-800/30">
-                      {/* Step number */}
-                      <div className="text-8xl font-bold text-zinc-800/30 absolute top-2 right-4 select-none group-hover:text-zinc-700/30 transition-colors">
-                        {item.step}
-                      </div>
-
-                      {/* Icon */}
+              <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+                {[
+                  { step: '1', icon: MessageSquare, title: 'Find & Ask', desc: 'Browse creators, pick a topic, write your question. No signup needed.' },
+                  { step: '2', icon: Wallet, title: 'Pay Anonymously', desc: 'Connect any Solana wallet. ShadowWire hides your identity automatically.' },
+                  { step: '3', icon: Lock, title: 'Save Your Code', desc: 'Get a unique access code to check for replies anytime.' },
+                ].map((item, i) => (
+                  <AnimatedSection key={i} delay={i * 0.15}>
+                    <div className="text-center">
                       <motion.div
-                        className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-6 shadow-lg`}
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 400 }}
+                        className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-indigo-500/20 relative"
+                        whileHover={{ scale: 1.05, rotate: 3 }}
                       >
                         <item.icon className="h-7 w-7 text-white" />
+                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-zinc-900 border-2 border-indigo-500 flex items-center justify-center text-xs font-bold text-indigo-400">
+                          {item.step}
+                        </div>
                       </motion.div>
-
-                      <h3 className="text-xl font-semibold text-white mb-3">{item.title}</h3>
-                      <p className="text-zinc-400 leading-relaxed">{item.description}</p>
+                      <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
+                      <p className="text-zinc-500 text-sm leading-relaxed">{item.desc}</p>
                     </div>
-                  </div>
-                </AnimatedSection>
-              ))}
+                  </AnimatedSection>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Features Grid */}
-        <section id="features" className="py-24 md:py-32 px-6 border-t border-zinc-800/50 bg-gradient-to-b from-transparent via-zinc-900/50 to-transparent">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16 md:mb-20">
-              <p className="text-sm text-indigo-400 font-medium mb-4 uppercase tracking-wider">Why OnlyAnon</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">Built for privacy</h2>
-              <p className="text-lg text-zinc-500 max-w-2xl mx-auto">Every feature designed to protect your identity while enabling honest conversations</p>
-            </AnimatedSection>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                {
-                  icon: Fingerprint,
-                  title: 'Zero-Knowledge Proofs',
-                  description: 'ShadowWire uses ZK technology to verify payments without revealing the sender.',
-                  color: 'indigo',
-                },
-                {
-                  icon: Zap,
-                  title: 'Instant Settlement',
-                  description: 'Payments settle in seconds on Solana. No waiting, no pending transactions.',
-                  color: 'yellow',
-                },
-                {
-                  icon: Globe,
-                  title: 'Any Wallet Works',
-                  description: 'Phantom, Solflare, Backpack, Ledger - connect whatever Solana wallet you have.',
-                  color: 'emerald',
-                },
-                {
-                  icon: Shield,
-                  title: 'No Account Required',
-                  description: 'Ask questions without signing up. Just connect wallet, pay, and go.',
-                  color: 'purple',
-                },
-                {
-                  icon: DollarSign,
-                  title: 'SOL & USDC',
-                  description: 'Creators choose their currency. Pay with SOL for volatility or USDC for stability.',
-                  color: 'blue',
-                },
-                {
-                  icon: Clock,
-                  title: 'No Time Limits',
-                  description: 'Your access code never expires. Check for replies whenever you want.',
-                  color: 'orange',
-                },
-              ].map((feature, i) => (
-                <AnimatedSection key={i} delay={i * 0.1}>
-                  <div className="group p-6 rounded-2xl bg-gradient-to-b from-zinc-800/30 to-zinc-900/30 border border-zinc-800/50 hover:border-zinc-700/80 transition-all duration-300 h-full">
-                    <div className={`w-12 h-12 rounded-xl bg-${feature.color}-500/10 border border-${feature.color}-500/20 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300`}>
-                      <feature.icon className={`h-5 w-5 text-${feature.color}-400`} />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">{feature.description}</p>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Privacy Deep Dive */}
+        {/* The Technology - Two column with animated diagram */}
         <section className="py-24 md:py-32 px-6 border-t border-zinc-800/50">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <AnimatedSection>
-                <p className="text-sm text-indigo-400 font-medium mb-4 uppercase tracking-wider">The Technology</p>
-                <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-6 leading-tight">
+                <p className="text-sm text-indigo-400 font-medium mb-3 uppercase tracking-wider">The Technology</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-5">
                   ShadowWire makes you invisible
                 </h2>
-                <p className="text-lg text-zinc-400 leading-relaxed mb-8">
+                <p className="text-zinc-400 leading-relaxed mb-8">
                   Traditional payments leave a trail. Every transaction links your wallet to the recipient.
                   ShadowWire breaks that chain using zero-knowledge proofs - cryptographic magic that proves
                   you paid without revealing who you are.
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {[
                     { icon: EyeOff, text: 'Wallet address never exposed to creators' },
-                    { icon: CircuitBoard, text: 'ZK proofs verify payment authenticity' },
-                    { icon: Cpu, text: 'Built on Solana for speed and low fees' },
-                    { icon: Lock, text: 'Open source and auditable' },
+                    { icon: Fingerprint, text: 'ZK proofs verify payment authenticity' },
+                    { icon: Zap, text: 'Built on Solana for speed and low fees' },
                   ].map((item, i) => (
                     <motion.div
                       key={i}
-                      className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800/50 hover:border-zinc-700/50 transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800/50"
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.1 }}
                     >
-                      <div className="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                        <item.icon className="h-5 w-5 text-indigo-400" />
+                      <div className="w-9 h-9 rounded-lg bg-indigo-500/10 flex items-center justify-center shrink-0">
+                        <item.icon className="h-4 w-4 text-indigo-400" />
                       </div>
-                      <span className="text-zinc-300">{item.text}</span>
+                      <span className="text-zinc-300 text-sm">{item.text}</span>
                     </motion.div>
                   ))}
                 </div>
               </AnimatedSection>
 
               <AnimatedSection delay={0.2}>
-                <div className="relative">
-                  {/* Animated flow diagram */}
-                  <div className="relative rounded-2xl bg-gradient-to-b from-zinc-800/50 to-zinc-900/50 border border-zinc-700/50 p-8">
-                    <div className="space-y-6">
-                      {/* You */}
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-                          <Eye className="h-7 w-7 text-zinc-400" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-white">Your Wallet</p>
-                          <p className="text-sm text-zinc-500">8xK3...mN9q</p>
-                        </div>
-                      </div>
-
-                      {/* Arrow down */}
-                      <div className="flex justify-center">
-                        <motion.div
-                          animate={{ y: [0, 5, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        >
-                          <ArrowRight className="h-6 w-6 text-indigo-500 rotate-90" />
-                        </motion.div>
-                      </div>
-
-                      {/* ShadowWire */}
-                      <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30">
-                        <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-                          <Sparkles className="h-7 w-7 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-white">ShadowWire</p>
-                          <p className="text-sm text-indigo-300">ZK Anonymization Layer</p>
-                        </div>
-                      </div>
-
-                      {/* Arrow down */}
-                      <div className="flex justify-center">
-                        <motion.div
-                          animate={{ y: [0, 5, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-                        >
-                          <ArrowRight className="h-6 w-6 text-indigo-500 rotate-90" />
-                        </motion.div>
-                      </div>
-
-                      {/* Creator */}
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center">
-                          <EyeOff className="h-7 w-7 text-emerald-400" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-white">Creator Sees</p>
-                          <p className="text-sm text-emerald-400">??? (Anonymous)</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <AnimatedFlowDiagram />
               </AnimatedSection>
             </div>
           </div>
         </section>
 
-        {/* Testimonials / Use Cases */}
-        <section className="py-24 md:py-32 px-6 border-t border-zinc-800/50 bg-gradient-to-b from-transparent via-indigo-950/10 to-transparent">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16 md:mb-20">
-              <p className="text-sm text-indigo-400 font-medium mb-4 uppercase tracking-wider">Use Cases</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">Who uses OnlyAnon?</h2>
-              <p className="text-lg text-zinc-500 max-w-2xl mx-auto">From crypto traders to therapists - anyone who values honest, private conversations</p>
+        {/* Features - Stunning Bento Grid */}
+        <section className="py-24 md:py-32 px-6 border-t border-zinc-800/50 relative overflow-hidden">
+          {/* Background effects */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/[0.03] rounded-full blur-[120px]" />
+          </div>
+
+          <div className="max-w-6xl mx-auto relative">
+            <AnimatedSection className="text-center mb-16">
+              <motion.div
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                <span className="text-xs text-indigo-300 font-medium tracking-wide">PRIVACY FIRST</span>
+              </motion.div>
+              <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-4">
+                Built for <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">privacy</span>
+              </h2>
+              <p className="text-zinc-500 max-w-md mx-auto">Every feature designed to protect your identity</p>
             </AnimatedSection>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                {
-                  title: 'Crypto Influencers',
-                  description: 'Get honest questions about your calls without revealing who\'s asking. No more awkward public callouts.',
-                  gradient: 'from-orange-500/20 to-red-500/20',
-                },
-                {
-                  title: 'Coaches & Mentors',
-                  description: 'Offer paid advice sessions. Mentees can ask sensitive questions without judgment.',
-                  gradient: 'from-blue-500/20 to-indigo-500/20',
-                },
-                {
-                  title: 'Tech Experts',
-                  description: 'Monetize your expertise. Answer technical questions from engineers who don\'t want to look dumb at work.',
-                  gradient: 'from-emerald-500/20 to-teal-500/20',
-                },
-                {
-                  title: 'Financial Advisors',
-                  description: 'Give financial guidance without knowing client portfolios. True blind advice.',
-                  gradient: 'from-purple-500/20 to-pink-500/20',
-                },
-                {
-                  title: 'Relationship Experts',
-                  description: 'People ask things they\'d never ask in person. Anonymity enables real honesty.',
-                  gradient: 'from-pink-500/20 to-rose-500/20',
-                },
-                {
-                  title: 'Industry Insiders',
-                  description: 'Share alpha, give advice, or just chat - without your identity attached.',
-                  gradient: 'from-amber-500/20 to-orange-500/20',
-                },
-              ].map((useCase, i) => (
-                <AnimatedSection key={i} delay={i * 0.1}>
-                  <div className={`p-6 rounded-2xl bg-gradient-to-br ${useCase.gradient} border border-white/5 h-full hover:border-white/10 transition-colors`}>
-                    <h3 className="text-lg font-semibold text-white mb-2">{useCase.title}</h3>
-                    <p className="text-zinc-300 text-sm leading-relaxed">{useCase.description}</p>
+            {/* Bento Grid */}
+            <div className="grid grid-cols-12 gap-4 md:gap-5">
+              {/* Hero Card - Zero Knowledge Proofs */}
+              <AnimatedSection className="col-span-12 md:col-span-7 row-span-2" delay={0.1}>
+                <motion.div
+                  className="relative h-full min-h-[320px] md:min-h-[400px] rounded-2xl overflow-hidden group cursor-default"
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Animated gradient border */}
+                  <div className="absolute inset-0 rounded-2xl p-px bg-gradient-to-br from-indigo-500/50 via-purple-500/30 to-indigo-500/50">
+                    <div className="absolute inset-0 rounded-2xl bg-[#0c0c0f]" />
                   </div>
+
+                  {/* Animated gradient overlay on hover */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+                    }}
+                  />
+
+                  <div className="relative h-full p-6 md:p-8 flex flex-col">
+                    {/* Floating orbs */}
+                    <div className="absolute top-8 right-8 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" />
+                    <div className="absolute bottom-12 right-12 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl" />
+
+                    {/* Icon with animated ring */}
+                    <div className="relative mb-6">
+                      <motion.div
+                        className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25"
+                        whileHover={{ rotate: [0, -5, 5, 0] }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <Fingerprint className="h-7 w-7 text-white" />
+                      </motion.div>
+                      <motion.div
+                        className="absolute -inset-2 rounded-2xl border border-indigo-500/30"
+                        animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    </div>
+
+                    <h3 className="text-xl md:text-2xl font-semibold text-white mb-2">Zero-Knowledge Proofs</h3>
+                    <p className="text-zinc-400 text-sm md:text-base leading-relaxed mb-6 max-w-md">
+                      Cryptographic verification that proves you paid without revealing who you are. Your wallet stays completely invisible.
+                    </p>
+
+                    {/* Animated visualization */}
+                    <div className="mt-auto">
+                      <div className="flex items-center gap-3 p-4 rounded-xl bg-zinc-900/80 border border-zinc-800/80">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center">
+                            <Wallet className="h-4 w-4 text-zinc-400" />
+                          </div>
+                          <div className="text-xs">
+                            <div className="text-zinc-500">Your wallet</div>
+                            <div className="text-zinc-300 font-mono">8xK3...mN9q</div>
+                          </div>
+                        </div>
+
+                        <div className="flex-1 flex items-center justify-center">
+                          <motion.div className="flex items-center gap-1">
+                            {[0, 1, 2].map((i) => (
+                              <motion.div
+                                key={i}
+                                className="w-1.5 h-1.5 rounded-full bg-indigo-400"
+                                animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }}
+                                transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
+                              />
+                            ))}
+                          </motion.div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs text-right">
+                            <div className="text-zinc-500">They see</div>
+                            <div className="text-emerald-400 font-medium">Anonymous</div>
+                          </div>
+                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                            <EyeOff className="h-4 w-4 text-emerald-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatedSection>
+
+              {/* Instant Settlement */}
+              <AnimatedSection className="col-span-6 md:col-span-5" delay={0.2}>
+                <motion.div
+                  className="relative h-full min-h-[180px] rounded-2xl p-px overflow-hidden group cursor-default"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-700/50 to-zinc-800/30 group-hover:from-indigo-500/30 group-hover:to-purple-500/20 transition-all duration-500" />
+                  <div className="absolute inset-px rounded-2xl bg-[#0c0c0f]" />
+
+                  <div className="relative h-full p-5 flex flex-col">
+                    <motion.div
+                      className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-indigo-500/50 transition-colors"
+                      whileHover={{ rotate: 180 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <Zap className="h-5 w-5 text-amber-400" />
+                    </motion.div>
+                    <h3 className="text-base font-semibold text-white mb-1">Instant Settlement</h3>
+                    <p className="text-zinc-500 text-sm">Seconds on Solana. No waiting.</p>
+
+                    <div className="mt-auto pt-4">
+                      <div className="flex items-center gap-2">
+                        <motion.div
+                          className="h-1 flex-1 rounded-full bg-zinc-800 overflow-hidden"
+                        >
+                          <motion.div
+                            className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full"
+                            initial={{ width: '0%' }}
+                            whileInView={{ width: '100%' }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: 0.5 }}
+                          />
+                        </motion.div>
+                        <span className="text-xs text-amber-400 font-medium">~400ms</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatedSection>
+
+              {/* Any Wallet */}
+              <AnimatedSection className="col-span-6 md:col-span-5" delay={0.3}>
+                <motion.div
+                  className="relative h-full min-h-[180px] rounded-2xl p-px overflow-hidden group cursor-default"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-700/50 to-zinc-800/30 group-hover:from-indigo-500/30 group-hover:to-purple-500/20 transition-all duration-500" />
+                  <div className="absolute inset-px rounded-2xl bg-[#0c0c0f]" />
+
+                  <div className="relative h-full p-5 flex flex-col">
+                    <motion.div
+                      className="w-10 h-10 rounded-lg bg-zinc-800 border border-zinc-700/50 flex items-center justify-center mb-4 group-hover:border-indigo-500/50 transition-colors"
+                    >
+                      <Globe className="h-5 w-5 text-indigo-400" />
+                    </motion.div>
+                    <h3 className="text-base font-semibold text-white mb-1">Any Wallet</h3>
+                    <p className="text-zinc-500 text-sm">Phantom, Solflare, Backpack...</p>
+
+                    <div className="mt-auto pt-4 flex gap-2">
+                      {['P', 'S', 'B'].map((letter, i) => (
+                        <motion.div
+                          key={i}
+                          className="w-8 h-8 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-xs font-medium text-zinc-400"
+                          initial={{ opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.6 + i * 0.1 }}
+                          whileHover={{ y: -2 }}
+                        >
+                          {letter}
+                        </motion.div>
+                      ))}
+                      <motion.div
+                        className="w-8 h-8 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-xs text-zinc-500"
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.9 }}
+                      >
+                        +
+                      </motion.div>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatedSection>
+
+              {/* Bottom row - 3 smaller cards */}
+              {[
+                { icon: Shield, title: 'No Account', desc: 'Just connect & pay', color: 'text-emerald-400' },
+                { icon: DollarSign, title: 'SOL & USDC', desc: 'Your choice of token', color: 'text-green-400' },
+                { icon: Clock, title: 'No Expiry', desc: 'Codes last forever', color: 'text-blue-400' },
+              ].map((feature, i) => (
+                <AnimatedSection key={i} className="col-span-4" delay={0.4 + i * 0.1}>
+                  <motion.div
+                    className="relative h-full min-h-[140px] rounded-xl p-px overflow-hidden group cursor-default"
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/50 to-zinc-800/30 group-hover:from-indigo-500/20 group-hover:to-purple-500/10 transition-all duration-500" />
+                    <div className="absolute inset-px rounded-xl bg-[#0c0c0f]" />
+
+                    <div className="relative h-full p-4 flex flex-col items-center text-center">
+                      <motion.div
+                        className="w-10 h-10 rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-3 group-hover:border-indigo-500/30 transition-colors"
+                        whileHover={{ rotate: [0, -10, 10, 0] }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <feature.icon className={`h-5 w-5 ${feature.color}`} />
+                      </motion.div>
+                      <h3 className="text-sm font-semibold text-white mb-0.5">{feature.title}</h3>
+                      <p className="text-zinc-500 text-xs">{feature.desc}</p>
+                    </div>
+                  </motion.div>
                 </AnimatedSection>
               ))}
             </div>
           </div>
         </section>
 
-        {/* FAQ Section */}
-        <section className="py-24 md:py-32 px-6 border-t border-zinc-800/50">
-          <div className="max-w-3xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-sm text-indigo-400 font-medium mb-4 uppercase tracking-wider">FAQ</p>
-              <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-4">Questions?</h2>
-              <p className="text-lg text-zinc-500">Everything you need to know about OnlyAnon</p>
-            </AnimatedSection>
-
-            <AnimatedSection delay={0.2}>
-              <div className="rounded-2xl bg-gradient-to-b from-zinc-800/30 to-zinc-900/30 border border-zinc-800/50 px-8">
-                {faqs.map((faq, i) => (
-                  <FAQItem
-                    key={i}
-                    question={faq.question}
-                    answer={faq.answer}
-                    isOpen={openFAQ === i}
-                    onClick={() => setOpenFAQ(openFAQ === i ? null : i)}
-                  />
-                ))}
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
-
-        {/* Creator CTA */}
-        <section className="py-24 md:py-32 px-6 border-t border-zinc-800/50">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection>
-              <div className="relative overflow-hidden rounded-3xl">
-                {/* Background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/30 via-purple-600/20 to-indigo-600/30" />
-                <motion.div
-                  className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-500/30 rounded-full blur-[150px]"
-                  animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.4, 0.3] }}
-                  transition={{ duration: 8, repeat: Infinity }}
-                />
-                <motion.div
-                  className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-500/30 rounded-full blur-[120px]"
-                  animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.3, 0.2] }}
-                  transition={{ duration: 6, repeat: Infinity, delay: 1 }}
-                />
-
-                {/* Border */}
-                <div className="absolute inset-0 rounded-3xl border border-indigo-500/30" />
-
-                {/* Content */}
-                <div className="relative px-8 md:px-16 py-16 md:py-24 text-center">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <p className="text-sm text-indigo-300 font-medium mb-4 uppercase tracking-wider">For Creators</p>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6 leading-tight">
-                      Turn your expertise<br />into income
-                    </h2>
-                    <p className="text-xl text-zinc-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-                      Get paid directly in SOL or USDC. Set your own prices.
-                      No middleman, no delays, no fees hidden in the fine print.
-                    </p>
-
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-                      {ready && authenticated ? (
-                        <Link href="/dashboard">
-                          <Button className="h-14 px-8 text-lg font-medium rounded-2xl bg-white text-zinc-900 hover:bg-zinc-100 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 group">
-                            Go to Dashboard
-                            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                          </Button>
-                        </Link>
-                      ) : (
-                        <Link href="/login">
-                          <Button className="h-14 px-8 text-lg font-medium rounded-2xl bg-white text-zinc-900 hover:bg-zinc-100 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-0.5 group">
-                            Create Your Page
-                            <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-zinc-300">
-                      {[
-                        { icon: Check, text: 'Keep 95% of payments' },
-                        { icon: Zap, text: 'Instant payouts' },
-                        { icon: Star, text: 'No monthly fees' },
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <item.icon className="h-4 w-4 text-indigo-400" />
-                          <span>{item.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
-              </div>
-            </AnimatedSection>
-          </div>
-        </section>
 
         {/* Footer */}
-        <footer className="border-t border-zinc-800/50 py-16 px-6">
+        <footer className="border-t border-zinc-800/50 py-12 px-6">
           <div className="max-w-7xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-12 mb-12">
-              {/* Logo & Description */}
-              <div className="md:col-span-2">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <Sparkles className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="font-bold text-white text-xl">OnlyAnon</span>
-                </div>
-                <p className="text-zinc-500 leading-relaxed max-w-sm mb-6">
-                  The anonymous Q&A platform where privacy isn't optional - it's guaranteed.
-                  Built on Solana with ShadowWire technology.
-                </p>
-                <div className="flex items-center gap-4">
-                  <a href="https://twitter.com/onlyanon" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-800/50 border border-zinc-700/50 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors">
-                    <Twitter className="h-4 w-4" />
-                  </a>
-                </div>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-2.5">
+                <Logo className="w-8 h-8" />
+                <span className="font-bold text-white">OnlyAnon</span>
               </div>
 
-              {/* Links */}
-              <div>
-                <h4 className="font-semibold text-white mb-4">Product</h4>
-                <ul className="space-y-3">
-                  {[
-                    { href: '/creators', label: 'Explore Creators' },
-                    { href: '/check', label: 'Check Reply' },
-                    { href: '#how-it-works', label: 'How it Works' },
-                    { href: '#features', label: 'Features' },
-                  ].map((link) => (
-                    <li key={link.href}>
-                      <Link href={link.href} className="text-zinc-500 hover:text-white transition-colors text-sm">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold text-white mb-4">Creators</h4>
-                <ul className="space-y-3">
-                  {[
-                    { href: '/login', label: 'Get Started' },
-                    { href: '/dashboard', label: 'Dashboard' },
-                  ].map((link) => (
-                    <li key={link.href}>
-                      <Link href={link.href} className="text-zinc-500 hover:text-white transition-colors text-sm">
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <div className="flex items-center gap-6 text-sm text-zinc-500">
+                <Link href="/creators" className="hover:text-white transition-colors">Explore</Link>
+                <Link href="/check" className="hover:text-white transition-colors">Check Reply</Link>
+                <Link href="/login" className="hover:text-white transition-colors">Sign In</Link>
               </div>
             </div>
 
-            <div className="pt-8 border-t border-zinc-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-zinc-600">
-                © 2025 OnlyAnon. Built with ShadowWire on Solana.
-              </p>
-              <div className="flex items-center gap-2 text-xs text-zinc-600">
-                <span>Powered by</span>
-                <span className="text-indigo-400 font-medium">ShadowWire</span>
-                <span>×</span>
-                <span className="text-emerald-400 font-medium">Solana</span>
-              </div>
+            <div className="mt-8 pt-6 border-t border-zinc-800/50 text-center text-xs text-zinc-600">
+              Built on Solana with ShadowWire
             </div>
           </div>
         </footer>
