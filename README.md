@@ -42,6 +42,7 @@ OnlyAnon bridges the gap between creator monetization and fan privacy. Creators 
 | Authentication | Privy (Twitter/X + Solana wallet) |
 | Database | Supabase (PostgreSQL) |
 | Blockchain | Solana |
+| RPC Providers | Helius (primary), QuickNode (fallback) |
 | Privacy Protocol | ShadowWire (zero-knowledge proofs) |
 | State Management | TanStack React Query |
 
@@ -81,15 +82,26 @@ src/
 - Node.js 18+
 - Supabase account
 - Privy account
+- Helius account (for Solana RPC)
+- QuickNode account (optional, for RPC fallback)
 
 ### Environment Variables
 
-Create a `.env.local` file:
+Create a `.env.local` file (see `.env.local.example`):
 
 ```env
+# Supabase
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Privy
 NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id
+PRIVY_APP_SECRET=your_privy_app_secret
+
+# Solana RPC (Helius primary, QuickNode fallback)
+NEXT_PUBLIC_HELIUS_RPC_URL=your_helius_rpc_url
+NEXT_PUBLIC_QUICKNODE_RPC_URL=your_quicknode_rpc_url  # Optional fallback
 ```
 
 ### Database Setup
